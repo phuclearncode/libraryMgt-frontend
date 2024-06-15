@@ -30,7 +30,7 @@ const TopNav = () => {
   };
 
   return (
-    <div className="d-flex" style={{ padding: "10px 10px 0 0" }}>
+    <div className="d-flex"  style={{ marginBottom: '50px'}}>
       <Nav className="me-auto">
         <Form className="d-flex">
           <div

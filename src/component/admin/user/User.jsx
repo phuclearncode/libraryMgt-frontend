@@ -19,7 +19,7 @@ const User = () => {
   };
 
   return (
-    <div style={{ marginTop: '50px', paddingRight: '10px' }}>
+    <div>
       <div className='d-flex justify-content-between' style={{ marginBottom: '20px' }}>
         <h5 >Người dùng</h5>
         <Link

@@ -12,7 +12,7 @@ const Home = () => {
             <Col className='col-2'>
               <NavBar />
             </Col>
-            <Col className='col-10'>
+            <Col className='col-10' style={{ padding: "10px 10px 0 0" }}>
               <TopNav />
               <Outlet />
             </Col> 

@@ -18,7 +18,7 @@ import User from "./component/admin/user/User";
 import AddUser from "./component/admin/user/AddUser";
 import Book from "./component/admin/book/Book";
 import { ProtectedRoute, AdminRoute} from "./routes/Guard";
-
+import { Outlet } from "react-router-dom";
 
 const App = () => {
 
@@ -47,7 +47,8 @@ const App = () => {
             element={<AdminRoute element={<AdminLayout />} />}
           >
             <Route index element={<AdminRoute element={<Dashboard />} />} />
-            <Route path="user" element={<AdminRoute element={<User />} />} >
+            <Route path="user" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
+              <Route index element={<AdminRoute element={<User />} />} />   {/* Index route for User */}
               <Route path="add" element={<AdminRoute element={<AddUser />} />} />
             </Route>
             <Route path="book" element={<AdminRoute element={<Book />} />} />
