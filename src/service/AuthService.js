@@ -1,0 +1,52 @@
+import axios from "axios";
+
+const BASE_URL = "http://localhost:8080/api/v1/auth";
+
+export const login = async (loginData) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/authenticate`, loginData);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const register = async (registerData) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/register`, registerData);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const verify = async (email, otp) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/verify`, { email, otp });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const resend = async (email) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/resend-otp`, { email });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const oAuth2Login = async (tokenId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/google`, { tokenId });
+        console.log("response", response);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
