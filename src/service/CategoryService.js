@@ -36,3 +36,12 @@ export const deleteCategory = async (categoryId) => {
     throw error;
   }
 };
+
+export const getCategoryById = async (categoryId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/category/${categoryId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

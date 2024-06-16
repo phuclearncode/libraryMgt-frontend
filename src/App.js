@@ -23,6 +23,8 @@ import Author from "./component/admin/author/Author";
 import Category from "./component/admin/category/Category";
 import AddBook from "./component/admin/book/AddBook";
 import EditBook from "./component/admin/book/EditBook";
+import AddCategory from "./component/admin/category/AddCategory";
+import EditCategory from "./component/admin/category/EditCategory";
 
 const App = () => {
 
@@ -60,7 +62,11 @@ const App = () => {
               <Route path="add" element={<AdminRoute element={<AddBook />} />} />
               <Route path="edit/:isbn" element={<AdminRoute element={<EditBook />} />} />
             </Route>
-            <Route path="category" element={<AdminRoute element={<Category />} />} />
+            <Route path="category" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
+              <Route index element={<AdminRoute element={<Category />} />} />   {/* Index route for User */}
+              <Route path="add" element={<AdminRoute element={<AddCategory />} />} />
+              <Route path="edit/:id" element={<AdminRoute element={<EditCategory />} />} />
+            </Route>
             <Route path="author" element={<AdminRoute element={<Author />} />} />
           </Route>
 

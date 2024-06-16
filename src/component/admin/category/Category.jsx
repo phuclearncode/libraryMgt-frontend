@@ -9,20 +9,24 @@ const Category = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([
+    { id: 1, name: 'Khoa học viễn tưởng' },
+    { id: 2, name: 'Lãng mạn' },
+    { id: 3, name: 'Kinh dị' },
+  ]); // Demo categories
 
   useEffect(() => {
-    fetchCategories();
+    // fetchCategories(); // Remove this line since we are using demo data
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await getCategories();
-      setCategories(response.data);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
+  // const fetchCategories = async () => {
+  //   try {
+  //     const response = await getCategories();
+  //     setCategories(response.data);
+  //   } catch (error) {
+  //     console.error('Error fetching categories:', error);
+  //   }
+  // };
 
   const handleShowModal = (category) => {
     setSelectedCategory(category);
@@ -52,8 +56,8 @@ const Category = () => {
 
   const handleDeleteCategory = async (categoryId) => {
     try {
-      await deleteCategory(categoryId);
-      fetchCategories();
+      // await deleteCategory(categoryId); // Remove this line since we are using demo data
+      setCategories((prevCategories) => prevCategories.filter((category) => category.id !== categoryId));
     } catch (error) {
       console.error('Error deleting category:', error);
     }
