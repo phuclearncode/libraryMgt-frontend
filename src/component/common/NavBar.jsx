@@ -98,7 +98,32 @@ const NavBar = () => {
             </Nav.Link>
           </Nav.Item>
         }
+        
+        {(librarian || admin) && (
+          <Nav.Item>
+            <Nav.Link
+              as={Link}
+              to="/admin/category"
+              style={{ color: '#8A8A8A', fontSize: 'small' }}
+            >
+              <i className="bi bi-card-list"></i>
+              <span className="mx-2">Danh mục</span>
+            </Nav.Link>
+          </Nav.Item>
+        )}
 
+        {(librarian || admin) && (
+          <Nav.Item>
+            <Nav.Link
+              as={Link}
+              to="/admin/author"
+              style={{ color: '#8A8A8A', fontSize: 'small' }}
+            >
+              <i className="bi bi-pencil-square"></i>
+              <span className="mx-2">Tác giả</span>
+            </Nav.Link>
+          </Nav.Item>
+        )}
 
 
       </div>

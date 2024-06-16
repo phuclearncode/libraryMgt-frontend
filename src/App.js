@@ -19,6 +19,10 @@ import AddUser from "./component/admin/user/AddUser";
 import Book from "./component/admin/book/Book";
 import { ProtectedRoute, AdminRoute} from "./routes/Guard";
 import { Outlet } from "react-router-dom";
+import Author from "./component/admin/author/Author";
+import Category from "./component/admin/category/Category";
+import AddBook from "./component/admin/book/AddBook";
+import EditBook from "./component/admin/book/EditBook";
 
 const App = () => {
 
@@ -51,7 +55,13 @@ const App = () => {
               <Route index element={<AdminRoute element={<User />} />} />   {/* Index route for User */}
               <Route path="add" element={<AdminRoute element={<AddUser />} />} />
             </Route>
-            <Route path="book" element={<AdminRoute element={<Book />} />} />
+            <Route path="book" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
+              <Route index element={<AdminRoute element={<Book />} />} />   {/* Index route for User */}
+              <Route path="add" element={<AdminRoute element={<AddBook />} />} />
+              <Route path="edit/:isbn" element={<AdminRoute element={<EditBook />} />} />
+            </Route>
+            <Route path="category" element={<AdminRoute element={<Category />} />} />
+            <Route path="author" element={<AdminRoute element={<Author />} />} />
           </Route>
 
           {/* Redirect any unmatched route to home */}
