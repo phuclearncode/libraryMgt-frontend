@@ -67,7 +67,7 @@ const Author = () => {
   const handleEditAuthor = (authorId) => {
     // Handle edit author logic
     return (
-      navigate('/admin/author/edit/' + authorId)
+      navigate('/admin/author/edit-author/' + authorId)
     );
   };
 

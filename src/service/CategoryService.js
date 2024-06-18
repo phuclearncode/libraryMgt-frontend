@@ -1,6 +1,7 @@
 import axios from "axios";
 const BASE_URL = "http://localhost:8080/api/v1";
 
+
 export const getCategories = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/category`);
@@ -10,7 +11,7 @@ export const getCategories = async () => {
   }
 };
 
-export const createCategory = async (category) => {
+export const addCategory = async (category) => {
   try {
     const response = await axios.post(`${BASE_URL}/category`, category);
     return response.data;

@@ -62,17 +62,17 @@ const App = () => {
             <Route path="book" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
               <Route index element={<AdminRoute element={<Book />} />} />   {/* Index route for User */}
               <Route path="add" element={<AdminRoute element={<AddBook />} />} />
-              <Route path="edit/:isbn" element={<AdminRoute element={<EditBook />} />} />
+              <Route path="edit-book/:isbn" element={<AdminRoute element={<EditBook />} />} />
             </Route>
             <Route path="category" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
               <Route index element={<AdminRoute element={<Category />} />} />   {/* Index route for User */}
               <Route path="add" element={<AdminRoute element={<AddCategory />} />} />
-              <Route path="edit/:id" element={<AdminRoute element={<EditCategory />} />} />
+              <Route path="edit-category/:id" element={<AdminRoute element={<EditCategory />} />} />
             </Route>
             <Route path="author" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
               <Route index element={<AdminRoute element={<Author />} />} />   {/* Index route for User */}
               <Route path="add" element={<AdminRoute element={<AddAuthor />} />} />
-              <Route path="edit/:id" element={<AdminRoute element={<EditAuthor />} />} />
+              <Route path="edit-author/:id" element={<AdminRoute element={<EditAuthor />} />} />
             </Route>
           </Route>
 

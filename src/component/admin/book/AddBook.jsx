@@ -5,6 +5,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons'; // Import icon
 import styled from 'styled-components';
+import {jwtDecode as jwt_decode} from 'jwt-decode';
+import { useEffect } from 'react';
+import { addBook, toBase64 } from '../../../service/BookService';
+
+
 export default function AddBook() {
   const navigate = useNavigate();
   const [isbn, setIsbn] = useState('');
@@ -14,11 +19,26 @@ export default function AddBook() {
   const [totalPages, setTotalPages] = useState('');
   const [language, setLanguage] = useState('');
   const [publisher, setPublisher] = useState('');
-  const [category, setCategory] = useState('');
   const [year, setYear] = useState('');
   const [status, setStatus] = useState('');
   const [stock, setStock] = useState('');
-  const [author, setAuthor] = useState('');
+  // const [author, setAuthor] = useState('');
+  const [user, setUser] = useState(''); // State to store user data
+  const [subject, setSubject] = useState('');
+
+
+  // useEffect(() => {
+  //   //if (!localStorage.getItem('access-token')) return (window.location.href = '/login');
+
+  //   const userString = localStorage.getItem('access-token');
+  //   if (userString) {
+  //     var deCoded = jwt_decode(userString);
+  //     setUser(deCoded);
+  //   }
+  // }, []);
+
+
+  console.log('user: ', user); // Log user data
 
   const UploadArea = styled.div`
   border: 2px dashed #ccc;
@@ -28,6 +48,7 @@ export default function AddBook() {
   cursor: pointer;
 `;
 
+
   const categoryOptions = ['Danh mục 1', 'Danh mục 2']; // Array for category dropdown options
   const statusOptions = ['Còn sách', 'Đã mượn']; // Array for status dropdown options
   const authorOptions = ['Tác giả 1', 'Tác giả 2']; // Array for author dropdown options
@@ -36,32 +57,43 @@ export default function AddBook() {
     setImage(acceptedFiles[0]);
   };
 
+  const [category, setCategory] = useState(null); // Array to store selected category IDs
+  const [author, setAuthor] = useState([]); // Array to store selected author IDs
+
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/jpeg, image/png, image/jpg',
     onDrop,
   });
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle form submission logic here
-    // You can use the state variables (isbn, title, image, etc.) to send data to your backend
-    console.log('Form submitted:', {
+
+    const base64Image = image ? await toBase64(image) : null;
+
+    const bookData = {
       isbn,
       title,
-      image,
-      price,
-      totalPages,
+      image: base64Image,
+      price: parseFloat(price), // Convert price to float
+      totalPage: parseInt(totalPages), // Convert totalPages to integer
       language,
+      subject,
       publisher,
-      category,
-      year,
+      publicationYear: `${year}-01-01`, // Format year as YYYY-MM-DD (January 1st)
       status,
-      stock,
-      author,
-    });
-    navigate('/admin/book'); // Redirect to the book list page after submission
+      stock: parseInt(stock), // Convert stock to integer
+      category: { id: category }, // Send category as an object with ID
+      authors: author // Array of author objects
+    };
+console.log(bookData);
+    try {
+      await addBook(bookData);
+      navigate('/admin/book');
+    } catch (error) {
+      console.error('Error adding book:', error);
+      // Handle errors appropriately (e.g., display error messages to the user)
+    }
   };
-
   return (
      <>
       <div className="d-flex justify-content-between" style={{ marginBottom: '20px' }}>
@@ -112,14 +144,23 @@ export default function AddBook() {
               />
             </Form.Group>
 
-            <Form.Group controlId="formImage">
+            {/* <Form.Group controlId="formImage">
         <Form.Label>Hình ảnh</Form.Label>
         <UploadArea {...getRootProps()}>
           <input {...getInputProps()} />
           <FontAwesomeIcon icon={faUpload} />
           <p>Kéo và thả hình ảnh vào đây hoặc nhấp vào đây để tải lên</p>
         </UploadArea>
-      </Form.Group>
+      </Form.Group> */}
+      <Form.Group controlId="formTitle">
+              <Form.Label>Hinh anh</Form.Label>
+              <Form.Control
+                type="text"
+                value={image}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </Form.Group>
 
             <Form.Group controlId="formTotalPages">
               <Form.Label>Tổng số trang</Form.Label>

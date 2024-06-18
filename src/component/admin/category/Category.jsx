@@ -5,16 +5,47 @@ import { getCategories, deleteCategory } from '../../../service/CategoryService'
 import CustomModal from '../../common/CustomModal';
 import FormCategory from '../../common/FormCategory';
 
+import {jwtDecode as jwt_decode} from "jwt-decode";
+
 const Category = () => {
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
+  const [category, setCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [showModal, setShowModal] = useState(false);
   const [categories, setCategories] = useState([
-    { id: 1, name: 'Khoa học viễn tưởng' },
-    { id: 2, name: 'Lãng mạn' },
-    { id: 3, name: 'Kinh dị' },
+    // { id: 1, name: 'Khoa học viễn tưởng' },
+    // { id: 2, name: 'Lãng mạn' },
+    // { id: 3, name: 'Kinh dị' },
   ]); // Demo categories
 
+  const [user, setUser] = useState('');
+
+  useEffect(() => {
+    const userString = localStorage.getItem('access-token');
+    if (userString) {
+      var deCoded = jwt_decode(userString);
+      setUser(deCoded.sub);
+    }
+  }, []);
+
+  useEffect(() => {
+    getCategories()
+      .then((response) => {
+        const categoryArray = response.data || [];
+        const filteredCategories = categoryArray.filter((category) =>
+          category.name.toLowerCase().includes(searchText.toLowerCase()),
+        );
+        setCategories(filteredCategories);
+      })
+      .catch((error) => {});
+  }, [searchText]);
+
+
+  
   useEffect(() => {
     // fetchCategories(); // Remove this line since we are using demo data
   }, []);
@@ -28,45 +59,60 @@ const Category = () => {
   //   }
   // };
 
-  const handleShowModal = (category) => {
-    setSelectedCategory(category);
-    setShowModal(true);
-  };
+  // const handleShowModal = (category) => {
+  //   setSelectedCategory(category);
+  //   setShowModal(true);
+  // };
 
-  const handleCloseModal = () => {
-    setSelectedCategory(null);
-    setShowModal(false);
-  };
+  // const handleCloseModal = () => {
+  //   setSelectedCategory(null);
+  //   setShowModal(false);
+  // };
 
-  const handleSaveCategory = (category) => {
-    if (selectedCategory) {
-      // Update category
-      setCategories((prevCategories) =>
-        prevCategories.map((prevCategory) =>
-          prevCategory.id === selectedCategory.id ? { ...category, id: selectedCategory.id } : prevCategory
-        )
-      );
-    } else {
-      // Add new category
-      const newCategory = { ...category, id: categories.length + 1 };
-      setCategories((prevCategories) => [...prevCategories, newCategory]);
-    }
-    handleCloseModal();
-  };
+
+  // const handleSaveCategory = (category) => {
+  //   if (selectedCategory) {
+  //     // Update category
+  //     setCategories((prevCategories) =>
+  //       prevCategories.map((prevCategory) =>
+  //         prevCategory.id === selectedCategory.id ? { ...category, id: selectedCategory.id } : prevCategory
+  //       )
+  //     );
+  //   } else {
+  //     // Add new category
+  //     const newCategory = { ...category, id: categories.length + 1 };
+  //     setCategories((prevCategories) => [...prevCategories, newCategory]);
+  //   }
+  //   handleCloseModal();
+  // };
+
+  // const handleDeleteCategory = async (categoryId) => {
+  //   try {
+  //     // await deleteCategory(categoryId); // Remove this line since we are using demo data
+  //     setCategories((prevCategories) => prevCategories.filter((category) => category.id !== categoryId));
+  //   } catch (error) {
+  //     console.error('Error deleting category:', error);
+  //   }
+  // };
 
   const handleDeleteCategory = async (categoryId) => {
-    try {
-      // await deleteCategory(categoryId); // Remove this line since we are using demo data
-      setCategories((prevCategories) => prevCategories.filter((category) => category.id !== categoryId));
-    } catch (error) {
-      console.error('Error deleting category:', error);
+    // if (!localStorage.getItem('access-token')) return (window.location.href = '/signin');
+
+    if (window.confirm('Do you want to delete this category?')) {
+      try {
+        await deleteCategory(categoryId);
+        setCategory(categories.filter((category) => category.id !== categoryId));
+        setSuccessMessage('Delete Successfully!');
+      } catch (error) {
+        setErrorMessage('Delete Failed!');
+      }
     }
   };
 
   const handleEditCategory = (categoryId) => {
     // Handle edit category logic
     return (
-      navigate('/admin/category/edit/' + categoryId)
+      navigate('/admin/category/edit-category/' + categoryId)
     );
   };
 
@@ -113,13 +159,13 @@ const Category = () => {
         </tbody>
       </Table>
 
-      <CustomModal
+      {/* <CustomModal
         show={showModal}
         handleClose={handleCloseModal}
         title={selectedCategory ? 'Chỉnh sửa danh mục' : 'Thêm danh mục'}
       >
         <FormCategory category={selectedCategory} onSave={handleSaveCategory} />
-      </CustomModal>
+      </CustomModal> */}
     </div>
   );
 };
