@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import "../../assets/style/Register.css";
 import Logo from "../../assets/image/logo.png";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate instead of Redirect
+import { Link, useNavigate } from "react-router-dom"; 
 import { useAuth } from "../context/AuthContext.js";
 import Notification from "../../component/common/Notification";
 import useNotification from "../../hooks/useNotification.js";
 
 const Register = () => {
-  const { register } = useAuth();
-  const { showError } = useNotification();
+  const { register, sendOtp } = useAuth();
+  const { showError, showSuccess } = useNotification();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -19,6 +19,19 @@ const Register = () => {
   });
 
   const navigate = useNavigate();
+
+  // xử lý send otp
+    const send = async () => {
+      try {
+        const response = await sendOtp(formData.email);
+        if (response.status === 200) {
+          showSuccess(response.message);
+        }
+      } catch (error) {
+        showError(error.message);
+      }
+    };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,13 +49,13 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-      showError('Error', 'Please fill in all fields');
+      showError('Vui lòng điền đầy đủ thông tin');
       
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      showError('Error', 'Passwords do not match');      
+      showError('Mật khẩu không khớp');      
       return;
     }
 
@@ -51,6 +64,8 @@ const Register = () => {
       console.log("response", response);
 
       if (response.status === 201) {
+
+        send();
 
         setFormData({
           fullName: "",
@@ -62,7 +77,7 @@ const Register = () => {
         navigate('/verify');
       }
     } catch (error) {
-      showError('Error', error);      
+      showError(error);      
     }
     
   };
@@ -75,42 +90,42 @@ const Register = () => {
           <img src={Logo} alt="logo" />
         </div>
         <div className="register-title">
-          <h6>Registration</h6>
+          <h6>Đăng ký tài khoản</h6>
           <div className="sub-title">
-            Do have an account ? <Link to="/login">Login here</Link>
+            Bạn đã có tài khoản? <Link to="/login">Đăng nhập ngay</Link>
           </div>
         </div>
         <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label className="label">Full name</Form.Label>
+          <Form.Group className="mb-1">
+            <Form.Label className="label">Họ và tên</Form.Label>
             <Form.Control
               className="field-input"
               type="text"
-              placeholder="Full name"
+              placeholder="Nhập họ và tên"
               style={{ fontSize: "small" }}
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
             />
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label className="label">College Email ID</Form.Label>
+          <Form.Group className="mb-1">
+            <Form.Label className="label">Email</Form.Label>
             <Form.Control
               className="field-input"
               type="email"
-              placeholder="Email"
+              placeholder="Nhập email"
               name="email"
               style={{ fontSize: "small" }}
               value={formData.email}
               onChange={handleChange}
             />
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label className="label">Password</Form.Label>
+          <Form.Group className="mb-1">
+            <Form.Label className="label">Mật khẩu</Form.Label>
             <Form.Control
               className="field-input"
               type="password"
-              placeholder="Password"
+              placeholder="Nhập mật khẩu"
               style={{ fontSize: "small" }}
               name="password"
               value={formData.password}
@@ -118,11 +133,11 @@ const Register = () => {
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label className="label">Confirm Password</Form.Label>
+            <Form.Label className="label">Xác nhận mật khẩu</Form.Label>
             <Form.Control
               className="field-input"
               type="password"
-              placeholder="Confirm password"
+              placeholder="Nhập lại mật khẩu"
               name="confirmPassword"
               style={{ fontSize: "small" }}
               value={formData.confirmPassword}
@@ -139,7 +154,7 @@ const Register = () => {
                 fontSize: "small",
               }}
             >
-              Register
+              Đăng ký
             </Button>
           </Form.Group>
         </Form>

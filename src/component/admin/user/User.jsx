@@ -1,25 +1,57 @@
-import React, { useState } from 'react'
-import NavBar from '../../common/NavBar';
-import TopNav from '../../common/TopNav';
-import { Row, Col, Table, Button } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react'
+import { Row, Col, Table, Button, Dropdown } from 'react-bootstrap';
 import CustomModal from '../../common/CustomModal';
 import FormUser from '../../common/FormUser';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { getUsersByRole } from '../../../service/UserService';
+import useNotification from '../../../hooks/useNotification';
+import Notification from '../../common/Notification';
 
 
 const User = () => {
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  // const [show, setShow] = useState(false);
+  // const handleClose = () => setShow(false);
+  // const handleShow = () => setShow(true);
 
-  const modalTitle = "Update User";
+  // const modalTitle = "Update User";
 
-  const handleSave = () => {
-    handleClose();
-  };
+  // const handleSave = () => {
+  //   handleClose();
+  // };
+
+
+  const [users, setUsers] = useState([]);
+  const { showSuccess } = useNotification();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state && location.state.success) {
+      showSuccess(location.state.success);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, showSuccess, navigate]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const usersData = await getUsersByRole();
+        setUsers(usersData.data);
+
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log("Users: ", users);
 
   return (
-    <div style={{ marginTop: '50px', paddingRight: '10px' }}>
+    <div >
+      
       <div className='d-flex justify-content-between' style={{ marginBottom: '20px' }}>
         <h5 >Người dùng</h5>
         <Link
@@ -31,44 +63,58 @@ const User = () => {
             border: 'none'
           }}
         >
-          <i class="bi bi-person-plus-fill"></i>
+          <i className="bi bi-person-plus-fill"></i>
           <span className='m-2'>Thêm</span>
         </Link>
       </div>
-      <Table
+      <Notification />
+      <table
+        className="table table-borderless"
         style={{
-          fontSize: 'small'
+          fontSize: 'small',
+          border: '1px solid #DEDEE1',
+          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)'
         }}
       >
         <thead>
           <tr>
             <th>Tên</th>
             <th>Email</th>
-            <th>Mật khẩu</th>
+            <th>Số điện thoại</th>
             <th>Vai trò</th>
-            <th>Trạng thái</th>
-            <th></th>
+            <th>Trạng thái tài khoản</th>
+            <th>Trạng thái xác thực</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Dien Nguyen</td>
-            <td>diennvhe171038@fpt.edu.vn</td>
-            <td>*********</td>
-            <td>LIBRARIAN</td>
-            <td>Đã xác thực</td>
-            <td><Button style={{ fontSize: 'small' }} variant="outline-danger" onClick={handleShow}><i class="bi bi-three-dots-vertical"></i></Button></td>
-          </tr>
-          <tr>
-            <td>Dien Nguyen</td>
-            <td>diennvhe171038@fpt.edu.vn</td>
-            <td>*********</td>
-            <td>LIBRARIAN</td>
-            <td>Đã xác thực</td>
-            <td><Button style={{ fontSize: 'small' }} variant="outline-danger" >Cập nhật</Button></td>
-          </tr>
+          {users.map(user => (
+            <tr key={user.id}>
+              <td>{user.fullName}</td>
+              <td>{user.email}</td>
+              <td>{user.phoneNumber}</td>
+              <td>{user.role}</td>
+              <td>{user.status == 'ACTIVE' ? 'Đã kích hoạt' : 'Chưa kích hoạt'}</td>
+              <td>{user.verified == true ? 'Đã xác thực' : 'Chưa xác thực'}</td>
+              <td>
+                <Link
+                  to={`/admin/user/edit/${user.id}`}
+                  style={{
+                    fontSize: 'small',
+                    backgroundColor: '#fff',
+                    border: 'none',
+                    color: '#000',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <i className="bi bi-pen"></i>
+                  <span className='m-2'>Sửa</span>
+                </Link>
+              </td>
+            </tr>
+          ))}
         </tbody>
-      </Table>
+      </table>
     </div>
   )
 }

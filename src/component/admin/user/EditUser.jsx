@@ -1,89 +1,75 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Form, Row, Col, Button } from 'react-bootstrap'
 import '../../../assets/style/User.css'
-import { Link, useNavigate } from 'react-router-dom'
-import Notification from '../../common/Notification'
+import { Link, useParams, useNavigate } from 'react-router-dom'
+import { getUserById, updateUser } from '../../../service/UserService'
 import useNotification from '../../../hooks/useNotification'
-import { addUser } from '../../../service/UserService'
+import Notification from '../../common/Notification'
 
 const AddUser = () => {
-    const { showError } = useNotification();
+    const { id } = useParams();
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        fullName: "",
-        email: "",
-        phoneNumber: "",
-        password: "",
-        confirmPassword: "",
-        role: "MEMBER",
-        status: "ACTIVE"
+    const { showError } = useNotification();
+    const [user, setUser] = useState({});
+    const [passwordData, setPasswordData] = useState({
+        password: '',
+        confirmPassword: ''
     });
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const user = await getUserById(id);
+                setUser(user.data);
+            } catch (error) {
+                console.error("Error fetching user:", error);
+            }
+        };
+
+        fetchData();
+    }, [id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    }
-
-    const validateForm = () => {
-        const { fullName, email, phoneNumber} = formData;
-        if (!fullName || !email || !phoneNumber) {
-            return false;
+        if (name === 'password' || name === 'confirmPassword') {
+            setPasswordData({ ...passwordData, [name]: value });
+        } else {
+            setUser({ ...user, [name]: value });
         }
-        return true;
     }
-
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!validateForm()) {
-            showError('Vui lòng điền đầy đủ thông tin');
-            return;
-        }
-
-        if (formData.password !== formData.confirmPassword) {
-            showError('Mật khẩu không khớp');
-            return;
-        }
 
         try {
-            const response = await addUser(formData);
-            console.log("response", response);
-            console.log("response.status", response.status);
-            console.log("response.message", response.message);
-
-            if (response.status === 201) {
-                setFormData({
-                    fullName: "",
-                    email: "",
-                    phoneNumber: "",
-                    password: "",
-                    confirmPassword: "",
-                    role: "MEMBER",
-                    status: "ACTIVE"
-                });
-
-                navigate('/admin/user', { state: { success: response.message }});
-            } else {
-                showError(response.message);
+            const updatedUser = { ...user };
+            if (passwordData.password && passwordData.confirmPassword) {
+                if (passwordData.password !== passwordData.confirmPassword) {
+                    showError('Mật khẩu không khớp');
+                    return;
+                }
+                updatedUser.password = passwordData.password;
             }
+
+            const response = await updateUser(id, updatedUser);
+            if (response.status === 200) {
+                navigate('/admin/user', { state: { success: response.message } });
+            }
+
         } catch (error) {
-            console.error("Error adding user:", error);
-            showError('Có lỗi xảy ra khi thêm người dùng');
+            console.error('Error updating user:', error);
+            showError('Có lỗi xảy ra, vui lòng thử lại sau');
         }
+    };
 
 
-
-    }
-
-    
 
     return (
         <div style={{ margin: '0 200px' }}>
-            <Notification />
             <div style={{ marginBottom: '20px' }}>
                 <h5 >Thêm người dùng</h5>
             </div>
+            <Notification />
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                     <Form.Label className="label">Họ tên</Form.Label>
@@ -93,7 +79,7 @@ const AddUser = () => {
                         placeholder="Nguyen Van A"
                         style={{ fontSize: "small" }}
                         name="fullName"
-                        value={formData.fullName}
+                        value={user.fullName}
                         onChange={handleChange}
                     />
                 </Form.Group>
@@ -106,7 +92,7 @@ const AddUser = () => {
                         placeholder="email@example.com"
                         style={{ fontSize: "small" }}
                         name="email"
-                        value={formData.email}
+                        value={user.email}
                         onChange={handleChange}
                     />
                 </Form.Group>
@@ -120,7 +106,7 @@ const AddUser = () => {
                             placeholder=""
                             style={{ fontSize: "small" }}
                             name="phoneNumber"
-                            value={formData.phoneNumber}
+                            value={user.phoneNumber}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -133,18 +119,20 @@ const AddUser = () => {
                             placeholder=""
                             style={{ fontSize: "small" }}
                             name="role"
-                            value={formData.role}
-                            handleChange={handleChange}
+                            value={user.role}
+                            onChange={handleChange}
                         >
                             <option
                                 value="MEMBER"
                                 style={{ fontSize: "small" }}
+                                defaultValue={user.role === "MEMBER"}
                             >
                                 Thành viên
                             </option>
-                            <option 
+                            <option
                                 value="LIBRARIAN"
                                 style={{ fontSize: "small" }}
+                                defaultValue={user.role === "LIBRARIAN"}
                             >
                                 Thủ thư
                             </option>
@@ -159,22 +147,26 @@ const AddUser = () => {
                             placeholder=""
                             style={{ fontSize: "small" }}
                             name="status"
-                            value={formData.status}
-                            handleChange={handleChange}
+                            value={user.status}
+                            onChange={handleChange}
                         >
                             <option
                                 value="ACTIVE"
                                 style={{ fontSize: "small" }}
+                                defaultValue={user.status === "ACTIVE"}
                             >
                                 Đã kích hoạt
                             </option>
-                            <option 
+                            <option
                                 value="INACTIVE"
                                 style={{ fontSize: "small" }}
+                                defaultValue={user.status === "INACTIVE"}
                             >
                                 Chưa kích hoạt
                             </option>
                         </Form.Select>
+
+
                     </Form.Group>
                 </Row>
                 <hr style={{ border: '1px solid #DEE2E6', marginBottom: '30px' }} />
@@ -188,7 +180,7 @@ const AddUser = () => {
                                 type="password"
                                 style={{ fontSize: "small" }}
                                 name="password"
-                                value={formData.password}
+                                value={passwordData.password}
                                 onChange={handleChange}
                             />
                         </Form.Group>
@@ -200,7 +192,7 @@ const AddUser = () => {
                                 type="password"
                                 style={{ fontSize: "small" }}
                                 name="confirmPassword"
-                                value={formData.confirmPassword}
+                                value={passwordData.confirmPassword}
                                 onChange={handleChange}
                             />
                         </Form.Group>

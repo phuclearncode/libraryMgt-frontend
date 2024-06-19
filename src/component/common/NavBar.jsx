@@ -87,12 +87,11 @@ const NavBar = () => {
               <span className='mx-2'>Người dùng</span>
             </Nav.Link>
           </Nav.Item>
-
         }
 
         {librarian &&
           <Nav.Item>
-            <Nav.Link as={Link} to="/" style={{ color: '#8A8A8A', fontSize: 'small' }}>
+            <Nav.Link as={Link} to="/admin/book" style={{ color: '#8A8A8A', fontSize: 'small' }}>
               <i className="bi bi-book"></i>
               <span className='mx-2'>Sách</span>
             </Nav.Link>
