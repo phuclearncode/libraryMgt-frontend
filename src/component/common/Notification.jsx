@@ -6,12 +6,12 @@ const Notification = () => {
   return <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={true} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />;
 };
 
-export const successNotification = (title, description) => {
-  toast.success(`${title}: ${description}`);
+export const successNotification = (description) => {
+  toast.success(`${description}`);
 };
 
-export const errorNotification = (title, description) => {
-  toast.error(`${title}: ${description}`);
+export const errorNotification = (description) => {
+  toast.error(`${description}`);
 };
 
 export default Notification;

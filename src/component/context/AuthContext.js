@@ -4,8 +4,18 @@ import {
     useState,
     createContext
 } from 'react';
-import { login as performLogin, verify as performVerify, resend as performResend, register as performRegister, oAuth2Login as performOAuth2Login } from '../../service/AuthService';
+import {
+    login as performLogin,
+    sendOtp as performSendOtp,
+    verify as performVerify,
+    resend as performResend,
+    register as performRegister,
+    oAuth2Login as performOAuth2Login,
+    forgotPassword as performForgotPassword,
+    resetPassword as performResetPassword
+} from '../../service/AuthService';
 import { jwtDecode } from 'jwt-decode';
+
 
 const AuthContext = createContext({});
 
@@ -33,6 +43,9 @@ const AuthProvider = ({ children }) => {
         setUserFromToken();
     }, []);
 
+
+
+
     const login = async (loginData) => {
         try {
             const response = await performLogin(loginData);
@@ -41,10 +54,10 @@ const AuthProvider = ({ children }) => {
                 const jwtToken = response.data.token;
                 localStorage.setItem("access_token", jwtToken);
                 decodeToken(jwtToken);
-            } else {
-                throw new Error(response.message);
+               
+            } else if (response.status === 302) {
+                localStorage.setItem("email", loginData.email);
             }
-            
             return response;
         } catch (error) {
             throw error;
@@ -52,6 +65,9 @@ const AuthProvider = ({ children }) => {
     };
 
     console.log("sdfds", user);
+
+
+
 
     const verify = async (email, otp) => {
         try {
@@ -65,6 +81,19 @@ const AuthProvider = ({ children }) => {
                 throw new Error(response.message);
             }
             return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    const sendOtp = async (email) => {
+        try {
+            const response = await performSendOtp(email);
+            if (response.status === 200) {
+                return response;
+            } else {
+                throw new Error(response.message);
+            }
         } catch (error) {
             throw error;
         }
@@ -113,6 +142,34 @@ const AuthProvider = ({ children }) => {
         }
     }
 
+    const forgotPassword = async (email) => {
+        try {
+            const response = await performForgotPassword(email);
+            if (response.status === 200) {
+                localStorage.setItem("email", email);
+                return response;
+            } else {
+                throw new Error(response.message);
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    const resetPassword = async (otp, email, newPassword) => {
+        try {
+            const response = await performResetPassword(otp, email, newPassword);
+            if (response.status === 200) {
+                localStorage.removeItem("email");
+                return response;
+            } else {
+                throw new Error(response.message);
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
 
     const logout = () => {
         localStorage.removeItem("access_token");
@@ -133,19 +190,19 @@ const AuthProvider = ({ children }) => {
     }
 
     const isAdmin = () => {
-        if(!user) return false;
+        if (!user) return false;
         return user.role === "ADMIN";
     }
 
 
     const isMember = () => {
-        if(!user) return false;
+        if (!user) return false;
         return user.role === "MEMBER";
     }
 
 
     const isLibrarian = () => {
-        if(!user) return false;
+        if (!user) return false;
         return user.role === "LIBRARIAN";
     }
 
@@ -153,9 +210,12 @@ const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{
             user,
             login,
+            sendOtp,
             verify,
             resend,
             register,
+            forgotPassword,
+            resetPassword,
             oAuth2Login,
             logout,
             isUserAuthenticated,

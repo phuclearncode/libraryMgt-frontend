@@ -14,9 +14,9 @@ const Verify = () => {
   const inputRefs = useRef([]);
   const navigate = useNavigate();
   const email = localStorage.getItem("email");
-  const { verify, resend} = useAuth();
+  const { verify, resend } = useAuth();
   const { showSuccess, showError } = useNotification();
-  
+
 
 
   const handleChange = (e, index) => {
@@ -44,9 +44,11 @@ const Verify = () => {
       const response = await verify(email, otpNumber);
       if (response.status === 200) {
         setVerified(true);
+      } else {
+        showError(response.message);
       }
     } catch (error) {
-      showError("Error", error);
+      showError(error);
     }
   };
 
@@ -58,12 +60,12 @@ const Verify = () => {
     try {
       const response = await resend(email);
       if (response.status === 200) {
-        showSuccess("Success", response.message);
+        showSuccess(response.message);
         setOtp(Array(6).fill(""));
         inputRefs.current[0].focus();
       }
     } catch (error) {
-      showError("Error", error);
+      showError(error);
     } finally {
       setResendLoading(false);
     }
@@ -90,17 +92,30 @@ const Verify = () => {
           <img src={Logo} alt="logo" />
         </div>
         <div className="verify-title">
-          <h6>Verification</h6>
+
           {verified ? (
-            <div className="sub-title">Thank you</div>
+            <h6>Xác thực thành công</h6>
           ) : (
-            <div className="sub-title">Check your E-mail for OTP</div>
+            <>
+              <h6>Xác thực OTP</h6>
+              <div className="sub-title">
+                Bạn chưa nhận được mã? 
+                  <Link
+                    to="/verify"
+                    onClick={handleResendOtp}
+                    disabled={resendLoading}
+                    style={{ cursor: resendLoading ? "not-allowed" : "pointer"}}
+                  >
+                    {resendLoading ? "Đang gửi..." : "Gửi lại mã"}
+                  </Link>
+              </div>
+            </>
           )}
         </div>
         {!verified ? (
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label className="label">Enter your OTP here</Form.Label>
+            <Form.Group className="mb-1">
+              
               <div className="input-container">
                 {otp.map((digit, index) => (
                   <Form.Control
@@ -116,7 +131,8 @@ const Verify = () => {
                 ))}
               </div>
             </Form.Group>
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-1 d-flex">
+              <Link to="/register" className="btn-back">Quay lại</Link>
               <Button
                 className="btn-verify"
                 type="submit"
@@ -124,30 +140,16 @@ const Verify = () => {
                   backgroundColor: "#F87555",
                   border: "none",
                   fontSize: "small",
+                  marginLeft: "10px",
                 }}
               >
-                Verify
+                Xác nhận
               </Button>
             </Form.Group>
-            <div className="resend">
-              <span>
-                Not yet received?
-                <Link
-                  href="/verify"
-                  onClick={handleResendOtp}
-                  disabled={resendLoading}
-                  style={{ cursor: resendLoading ? "not-allowed" : "pointer" }}
-                >
-                  {resendLoading ? "Resending..." : "Resend"}
-                </Link>
-              </span>
-              <Link to="/register">Back</Link>
-            </div>
           </Form>
         ) : (
           // Nếu đã được xác minh, hiển thị thông báo đã xác minh thành công
           <div className="verify-success">
-            <h6>You are verified</h6>
             <svg
               fill="none"
               height="24"
