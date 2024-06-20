@@ -17,6 +17,15 @@ import User from "./component/admin/user/User";
 import AddUser from "./component/admin/user/AddUser";
 import EditUser from "./component/admin/user/EditUser";
 import Book from "./component/admin/book/Book";
+
+import Author from "./component/admin/author/Author";
+import Category from "./component/admin/category/Category";
+import AddBook from "./component/admin/book/AddBook";
+import EditBook from "./component/admin/book/EditBook";
+import AddCategory from "./component/admin/category/AddCategory";
+import EditCategory from "./component/admin/category/EditCategory";
+import AddAuthor from "./component/admin/author/AddAuthor";
+import EditAuthor from "./component/admin/author/EditAuthor";
 import { ProtectedRoute, AdminRoute, LibrarianRoute } from "./routes/Guard";
 
 const App = () => {
@@ -41,6 +50,7 @@ const App = () => {
           {/* Client Protected Routes */}
           {/* <Route path="/profile" element={<ProtectedRoute element={Profile} />} /> */}
 
+
           {/* Common Admin/Librarian Route */}
           <Route path="/admin" element={<ProtectedRoute element={AdminLayout} />}>
             <Route index element={<Dashboard />} />
@@ -52,6 +62,21 @@ const App = () => {
 
             {/* Librarian-specific routes */}
             <Route path="book" element={<LibrarianRoute element={Book} />} />
+            <Route path="book" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
+              <Route index element={<AdminRoute element={<Book />} />} />   {/* Index route for User */}
+              <Route path="add" element={<AdminRoute element={<AddBook />} />} />
+              <Route path="edit-book/:isbn" element={<AdminRoute element={<EditBook />} />} />
+            </Route>
+            <Route path="category" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
+              <Route index element={<AdminRoute element={<Category />} />} />   {/* Index route for User */}
+              <Route path="add" element={<AdminRoute element={<AddCategory />} />} />
+              <Route path="edit-category/:id" element={<AdminRoute element={<EditCategory />} />} />
+            </Route>
+            <Route path="author" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
+              <Route index element={<AdminRoute element={<Author />} />} />   {/* Index route for User */}
+              <Route path="add" element={<AdminRoute element={<AddAuthor />} />} />
+              <Route path="edit-author/:id" element={<AdminRoute element={<EditAuthor />} />} />
+            </Route>
           </Route>
 
           {/* Redirect any unmatched route to home */}
