@@ -71,19 +71,19 @@ export default function AddBook() {
     const base64Image = image ? await toBase64(image) : null;
 
     const bookData = {
-      isbn,
-      title,
-      image: base64Image,
-      price: parseFloat(price), // Convert price to float
-      totalPage: parseInt(totalPages), // Convert totalPages to integer
-      language,
-      subject,
-      publisher,
-      publicationYear: `${year}-01-01`, // Format year as YYYY-MM-DD (January 1st)
-      status,
-      stock: parseInt(stock), // Convert stock to integer
-      category: { id: category }, // Send category as an object with ID
-      authors: author // Array of author objects
+      isbn: "978-0321146533",
+      title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+      image: "https://images-na.ssl-images-amazon.com/images/I/41xShlnTZTL._SX376_BO1,204,203,200_.jpg",
+      price: 33.78,
+      totalPage: 464,
+      language: "English",
+      subject: "Computer Programming",
+      publisher: "Prentice Hall",
+      publicationYear: "2008-09-11", // Formatted for display
+      status: "Available",
+      stock: 50,
+      authors: [{ name: "Robert C. Martin" }],
+      category: { name: "Software Development" }
     };
 console.log(bookData);
     try {
@@ -94,6 +94,8 @@ console.log(bookData);
       // Handle errors appropriately (e.g., display error messages to the user)
     }
   };
+
+  
   return (
      <>
       <div className="d-flex justify-content-between" style={{ marginBottom: '20px' }}>
