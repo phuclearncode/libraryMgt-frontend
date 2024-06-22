@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Form, Row, Col, Button } from 'react-bootstrap'
-import '../../../assets/style/User.css'
+import '../../../assets/style/Style.css'
 import { Link, useNavigate } from 'react-router-dom'
 import Notification from '../../common/Notification'
 import useNotification from '../../../hooks/useNotification'

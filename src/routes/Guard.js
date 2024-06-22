@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+// Guard.js
+import React, {useEffect, useState} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from "../component/context/AuthContext";
+import { useAuth } from '../component/context/AuthContext';
 
 export const ProtectedRoute = ({ element: Component }) => {
   const location = useLocation();
@@ -11,10 +12,10 @@ export const ProtectedRoute = ({ element: Component }) => {
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
-    setAuthReady(true); // Mark authentication as ready
+    setAuthReady(true);
 
     if (!authenticated) {
-      navigate("/login", { replace: true, state: { from: location } });
+      navigate('/login', { replace: true, state: { from: location } });
     }
   }, [authenticated, navigate, location]);
 
@@ -22,7 +23,7 @@ export const ProtectedRoute = ({ element: Component }) => {
     return null; // or LoadingIndicator or any component while authentication is in progress
   }
 
-  return authenticated ? <Component /> : null;
+  return authenticated ? Component : null;
 };
 
 export const AdminRoute = ({ element: Component }) => {
@@ -35,10 +36,10 @@ export const AdminRoute = ({ element: Component }) => {
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
-    setAuthReady(true); // Mark authentication as ready
+    setAuthReady(true);
 
     if (!authenticated || !admin) {
-      navigate("/login", { replace: true, state: { from: location } });
+      navigate('/login', { replace: true, state: { from: location } });
     }
   }, [authenticated, admin, navigate, location]);
 
@@ -46,7 +47,7 @@ export const AdminRoute = ({ element: Component }) => {
     return null; // or LoadingIndicator or any component while authentication is in progress
   }
 
-  return authenticated && admin ? <Component /> : null;
+  return authenticated && admin ? Component : null;
 };
 
 export const LibrarianRoute = ({ element: Component }) => {
@@ -59,10 +60,10 @@ export const LibrarianRoute = ({ element: Component }) => {
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
-    setAuthReady(true); // Mark authentication as ready
+    setAuthReady(true);
 
     if (!authenticated || !librarian) {
-      navigate("/login", { replace: true, state: { from: location } });
+      navigate('/login', { replace: true, state: { from: location } });
     }
   }, [authenticated, librarian, navigate, location]);
 
@@ -70,5 +71,5 @@ export const LibrarianRoute = ({ element: Component }) => {
     return null; // or LoadingIndicator or any component while authentication is in progress
   }
 
-  return authenticated && librarian ? <Component /> : null;
+  return authenticated && librarian ? Component : null;
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Row, Col, Button } from 'react-bootstrap'
-import '../../../assets/style/User.css'
+import '../../../assets/style/Style.css'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { getUserById, updateUser } from '../../../service/UserService'
 import useNotification from '../../../hooks/useNotification'
@@ -67,7 +67,7 @@ const AddUser = () => {
     return (
         <div style={{ margin: '0 200px' }}>
             <div style={{ marginBottom: '20px' }}>
-                <h5 >Thêm người dùng</h5>
+                <h5 >Cập nhật người dùng</h5>
             </div>
             <Notification />
             <Form onSubmit={handleSubmit}>

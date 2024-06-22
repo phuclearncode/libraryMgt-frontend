@@ -1,125 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Row, Col } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { getCategories, deleteCategory } from '../../../service/CategoryService';
-import CustomModal from '../../common/CustomModal';
-import FormCategory from '../../common/FormCategory';
 
-import {jwtDecode as jwt_decode} from "jwt-decode";
 
 const Category = () => {
   const navigate = useNavigate();
-  const [category, setCategory] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [searchText, setSearchText] = useState('');
-  const [showModal, setShowModal] = useState(false);
   const [categories, setCategories] = useState([
-    // { id: 1, name: 'Khoa học viễn tưởng' },
-    // { id: 2, name: 'Lãng mạn' },
-    // { id: 3, name: 'Kinh dị' },
-  ]); // Demo categories
+    { id: 1, name: 'Fiction', description: 'Fictional works', parent_id: null },
+    { id: 2, name: 'Non-fiction', description: 'Non-fictional works', parent_id: null },
+    { id: 3, name: 'Fantasy', description: 'Fantasy books', parent_id: 1 },
+    { id: 4, name: 'Science Fiction', description: 'Sci-fi books', parent_id: 1 },
+    { id: 5, name: 'Biographies', description: 'Biographies and memoirs', parent_id: 2 },
+  ]);
 
-  const [user, setUser] = useState('');
-
-  useEffect(() => {
-    const userString = localStorage.getItem('access-token');
-    if (userString) {
-      var deCoded = jwt_decode(userString);
-      setUser(deCoded.sub);
-    }
-  }, []);
-
-  useEffect(() => {
-    getCategories()
-      .then((response) => {
-        const categoryArray = response.data || [];
-        const filteredCategories = categoryArray.filter((category) =>
-          category.name.toLowerCase().includes(searchText.toLowerCase()),
-        );
-        setCategories(filteredCategories);
-      })
-      .catch((error) => {});
-  }, [searchText]);
-
-
-  
-  useEffect(() => {
-    // fetchCategories(); // Remove this line since we are using demo data
-  }, []);
-
-  // const fetchCategories = async () => {
-  //   try {
-  //     const response = await getCategories();
-  //     setCategories(response.data);
-  //   } catch (error) {
-  //     console.error('Error fetching categories:', error);
-  //   }
-  // };
-
-  // const handleShowModal = (category) => {
-  //   setSelectedCategory(category);
-  //   setShowModal(true);
-  // };
-
-  // const handleCloseModal = () => {
-  //   setSelectedCategory(null);
-  //   setShowModal(false);
-  // };
-
-
-  // const handleSaveCategory = (category) => {
-  //   if (selectedCategory) {
-  //     // Update category
-  //     setCategories((prevCategories) =>
-  //       prevCategories.map((prevCategory) =>
-  //         prevCategory.id === selectedCategory.id ? { ...category, id: selectedCategory.id } : prevCategory
-  //       )
-  //     );
-  //   } else {
-  //     // Add new category
-  //     const newCategory = { ...category, id: categories.length + 1 };
-  //     setCategories((prevCategories) => [...prevCategories, newCategory]);
-  //   }
-  //   handleCloseModal();
-  // };
-
-  // const handleDeleteCategory = async (categoryId) => {
-  //   try {
-  //     // await deleteCategory(categoryId); // Remove this line since we are using demo data
-  //     setCategories((prevCategories) => prevCategories.filter((category) => category.id !== categoryId));
-  //   } catch (error) {
-  //     console.error('Error deleting category:', error);
-  //   }
-  // };
-
-  const handleDeleteCategory = async (categoryId) => {
-    // if (!localStorage.getItem('access-token')) return (window.location.href = '/signin');
-
-    if (window.confirm('Do you want to delete this category?')) {
-      try {
-        await deleteCategory(categoryId);
-        setCategory(categories.filter((category) => category.id !== categoryId));
-        setSuccessMessage('Delete Successfully!');
-      } catch (error) {
-        setErrorMessage('Delete Failed!');
-      }
-    }
+  const findCategoryById = (categoryId) => {
+    return categories.find(cat => cat.id === categoryId);
   };
 
-  const handleEditCategory = (categoryId) => {
-    // Handle edit category logic
-    return (
-      navigate('/admin/category/edit-category/' + categoryId)
-    );
-  };
 
   return (
     <div>
       <div className="d-flex justify-content-between" style={{ marginBottom: '20px' }}>
-        <h5>Quản lý danh mục</h5>
+        <h5>Danh mục</h5>
         <Link
           className="btn btn-primary"
           to="/admin/category/add"
@@ -129,43 +31,55 @@ const Category = () => {
             border: 'none',
           }}
         >
-          <i className="bi bi-plus-circle-fill"></i>
+          <i class="bi bi-plus-lg"></i>
           <span className="m-2">Thêm</span>
         </Link>
       </div>
       <Table style={{ fontSize: 'small' }}>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Tên danh mục</th>
-            <th></th>
+            <th>Danh mục</th>
+            <th>Danh mục cha</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
           {categories.map((category) => (
             <tr key={category.id}>
-              <td>{category.id}</td>
-              <td>{category.name}</td>
-              <td>
-                <Button style={{ fontSize: 'small' }} variant="outline-danger" onClick={() => handleEditCategory(category.id)}>
-                  <i className="bi bi-pencil-fill"></i>
-                </Button>
-                <Button style={{ fontSize: 'small' }} variant="outline-danger" onClick={() => handleDeleteCategory(category.id)}>
-                  <i className="bi bi-trash-fill"></i>
-                </Button>
+              <td className="align-middle">{category.name}</td>
+              <td className="align-middle">{category.parent_id ? findCategoryById(category.parent_id).name : ''}</td>
+              <td className="align-middle">
+                <Link
+                  to={`/admin/category/edit/${category.id}`}
+                  style={{
+                    fontSize: 'small',
+                    backgroundColor: '#fff',
+                    border: 'none',
+                    color: '#000',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <i className="bi bi-pen"></i>
+                  <span className='m-2'>Sửa</span>
+                </Link>
+                <Link
+                  to={`/admin/category/delete/${category.id}`}
+                  style={{
+                    fontSize: 'small',
+                    backgroundColor: '#fff',
+                    border: 'none',
+                    color: '#000',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <i class="bi bi-trash3"></i>
+                  <span className='m-2'>Xóa</span>
+                </Link>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
-
-      {/* <CustomModal
-        show={showModal}
-        handleClose={handleCloseModal}
-        title={selectedCategory ? 'Chỉnh sửa danh mục' : 'Thêm danh mục'}
-      >
-        <FormCategory category={selectedCategory} onSave={handleSaveCategory} />
-      </CustomModal> */}
     </div>
   );
 };

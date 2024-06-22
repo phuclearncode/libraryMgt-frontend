@@ -71,7 +71,7 @@ const NavBar = () => {
         )}
 
 
-        {(admin || librarian) &&
+        {librarian &&
           <Nav.Item>
             <Nav.Link as={Link} to="/admin" style={{ color: '#8A8A8A', fontSize: 'small' }}>
               <i className="bi bi-person"></i>
@@ -89,7 +89,7 @@ const NavBar = () => {
           </Nav.Item>
         }
 
-        {(librarian || admin) && 
+        {librarian && 
           <Nav.Item>
             <Nav.Link as={Link} to="/admin/book" style={{ color: '#8A8A8A', fontSize: 'small' }}>
               <i className="bi bi-book"></i>
@@ -98,7 +98,7 @@ const NavBar = () => {
           </Nav.Item>
         }
         
-        {(librarian || admin) && (
+        {librarian && (
           <Nav.Item>
             <Nav.Link
               as={Link}
@@ -111,7 +111,7 @@ const NavBar = () => {
           </Nav.Item>
         )}
 
-        {(librarian || admin) && (
+        {librarian && (
           <Nav.Item>
             <Nav.Link
               as={Link}
