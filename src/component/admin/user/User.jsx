@@ -64,13 +64,12 @@ const User = () => {
             border: 'none'
           }}
         >
-          <i className="bi bi-person-plus-fill"></i>
+          <i className="bi bi-person-plus"></i>
           <span className='m-2'>Thêm</span>
         </Link>
       </div>
       <Notification />
-      <table
-        className="table table-borderless"
+      <Table
         style={{
           fontSize: 'small',
           border: '1px solid #DEDEE1',
@@ -115,7 +114,7 @@ const User = () => {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   )
 }

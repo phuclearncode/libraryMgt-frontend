@@ -10,7 +10,7 @@ import { useAuth } from "../context/AuthContext.js";
 
 
 const Login = () => {
-  const { login, isMember, sendOtp } = useAuth();
+  const { login, sendOtp, isAdmin, isLibrarian, isMember } = useAuth();
   const { showSuccess, showError } = useNotification();
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,7 +40,9 @@ const Login = () => {
   };
 
 
-  
+
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,12 +66,20 @@ const Login = () => {
 
     try {
       const response = await login(formData);
-      console.log("response", response);
+      console.log("response in login", response);
       if (response.status === 200) {
-        if (isMember()) {
+
+        console.log("isAdmin", isAdmin());
+        console.log("isLibrarian", isLibrarian());
+        console.log("isMember", isMember());
+
+
+        if (isAdmin() || isLibrarian()) {
+          navigate("/admin");
+        } else if (isMember()) {
           navigate("/");
         } else {
-          navigate("/admin");
+          showError('Không thể xác định vai trò của người dùng');
         }
       } else if (response.status === 302) {
         send();

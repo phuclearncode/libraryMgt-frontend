@@ -190,21 +190,31 @@ const AuthProvider = ({ children }) => {
     }
 
     const isAdmin = () => {
-        if (!user) return false;
-        return user.role === "ADMIN";
-    }
-
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            return false;
+        }
+        const { role } = jwtDecode(token);
+        return role === "ADMIN";
+    };
 
     const isMember = () => {
-        if (!user) return false;
-        return user.role === "MEMBER";
-    }
-
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            return false;
+        }
+        const { role } = jwtDecode(token);
+        return role === "MEMBER";
+    };
 
     const isLibrarian = () => {
-        if (!user) return false;
-        return user.role === "LIBRARIAN";
-    }
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            return false;
+        }
+        const { role } = jwtDecode(token);
+        return role === "LIBRARIAN";
+    };
 
     return (
         <AuthContext.Provider value={{

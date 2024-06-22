@@ -49,34 +49,36 @@ const App = () => {
 
           {/* Client Protected Routes */}
           {/* <Route path="/profile" element={<ProtectedRoute element={Profile} />} /> */}
+          {/* <Route path="/" element={<ProtectedRoute element={ClientLayout }/>} > 
+            <Route index element={<ProtectedRoute element={Home} />} />
+            <Route path="search" element={<ProtectedRoute element={Search} />} />
+            <Route path="my-shelf" element={<ProtectedRoute element={MyShelf} />} />
+            <Route path="contribute" element={<ProtectedRoute element={Contribute} />} />
+          </Route> */}
 
 
           {/* Common Admin/Librarian Route */}
-          <Route path="/admin" element={<ProtectedRoute element={AdminLayout} />}>
+          <Route path="/admin" element={<ProtectedRoute element={<AdminLayout />} />} >
             <Route index element={<Dashboard />} />
 
             {/* Admin-specific routes */}
-            <Route path="user" element={<AdminRoute element={User} />} />
-            <Route path="user/add" element={<AdminRoute element={AddUser} />} />
-            <Route path="user/edit/:id" element={<AdminRoute element={EditUser} />} />
+            <Route path="user" element={<AdminRoute element={<User />} />} />
+            <Route path="user/add" element={<AdminRoute element={<AddUser />} />} />
+            <Route path="user/edit/:id" element={<AdminRoute element={<EditUser />} />} />
 
             {/* Librarian-specific routes */}
-            <Route path="book" element={<LibrarianRoute element={Book} />} />
-            <Route path="book" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
-              <Route index element={<AdminRoute element={<Book />} />} />   {/* Index route for User */}
-              <Route path="add" element={<AdminRoute element={<AddBook />} />} />
-              <Route path="edit-book/:isbn" element={<AdminRoute element={<EditBook />} />} />
-            </Route>
-            <Route path="category" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
-              <Route index element={<AdminRoute element={<Category />} />} />   {/* Index route for User */}
-              <Route path="add" element={<AdminRoute element={<AddCategory />} />} />
-              <Route path="edit-category/:id" element={<AdminRoute element={<EditCategory />} />} />
-            </Route>
-            <Route path="author" element={<AdminRoute element={<Outlet />} />}> {/* Outlet added */}
-              <Route index element={<AdminRoute element={<Author />} />} />   {/* Index route for User */}
-              <Route path="add" element={<AdminRoute element={<AddAuthor />} />} />
-              <Route path="edit-author/:id" element={<AdminRoute element={<EditAuthor />} />} />
-            </Route>
+            <Route path="book" element={<LibrarianRoute element={<Book />} />} />
+            <Route path="book/add" element={<LibrarianRoute element={<AddBook />} />} />
+            <Route path="book/edit/:isbn" element={<LibrarianRoute element={<EditBook />} />} />
+
+            <Route path="category" element={<LibrarianRoute element={<Category />} />} /> 
+            <Route path="category/add" element={<LibrarianRoute element={<AddCategory />} />} />
+            <Route path="category/edit/:id" element={<LibrarianRoute element={<EditCategory />} />} />
+            
+            <Route path="author" element={<LibrarianRoute element={<Author />} />} />   
+            <Route path="author/add" element={<LibrarianRoute element={<AddAuthor />} />} />
+            <Route path="author/edit/:id" element={<LibrarianRoute element={<EditAuthor />} />} />
+            
           </Route>
 
           {/* Redirect any unmatched route to home */}
