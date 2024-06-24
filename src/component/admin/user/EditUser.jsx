@@ -6,7 +6,7 @@ import { getUserById, updateUser } from '../../../service/UserService'
 import useNotification from '../../../hooks/useNotification'
 import Notification from '../../common/Notification'
 
-const AddUser = () => {
+const EditUser = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { showError } = useNotification();
@@ -228,4 +228,4 @@ const AddUser = () => {
     )
 }
 
-export default AddUser
+export default EditUser
