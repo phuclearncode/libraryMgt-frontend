@@ -1,10 +1,18 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/api/v1";
+const BASE_URL = "http://localhost:8080/api/v1/author";
+const getHeader = () => {
+  const token = localStorage.getItem("access_token");
+  return {
+      Authorization: `Bearer ${token}` ,
+      "Content-Type": "application/json"
+  };
+};
+
 
 export const getAuthors = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/author`);
+    const response = await axios.get(`${BASE_URL}/find-all-author`, { headers: getHeader() });
     return response.data;
   } catch (error) {
     throw error;
@@ -13,7 +21,7 @@ export const getAuthors = async () => {
 
 export const addAuthor = async (author) => {
   try {
-    const response = await axios.post(`${BASE_URL}/author`, author);
+    const response = await axios.post(`${BASE_URL}/add-author`, author, { headers: getHeader() });
     return response.data;
   } catch (error) {
     throw error;
@@ -22,19 +30,25 @@ export const addAuthor = async (author) => {
 
 export const updateAuthor = async (authorId, author) => {
   try {
-    const response = await axios.put(`${BASE_URL}/author/${authorId}`, author);
+    const response = await axios.put(`${BASE_URL}/update-author/${authorId}`, author,{ headers: getHeader() });
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const deleteAuthor = async (authorId) => {
+export const deleteAuthor = async (authorID) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/author/${authorId}`);
+    const response = await axios.delete(`${BASE_URL}/delete-author`,{ 
+      headers: getHeader(),
+      data: { authorID } 
+    });
     return response.data;
   } catch (error) {
-    throw error;
+    if (error.response) {
+      console.log(error.response.data);
+     }
+     throw error; 
   }
 };
 
