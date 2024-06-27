@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Row, Col } from 'react-bootstrap';
+import React, { useState} from 'react';
+import { Table} from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAuthors, deleteAuthor } from '../../../service/AuthorService';
-import CustomModal from '../../common/CustomModal';
-import FormAuthor from '../../common/FormAuthor';
+
 
 const Author = () => {
   const navigate = useNavigate();
 
   const [authors, setAuthors] = useState([
-    // Demo authors
     { id: 1, name: 'J.K. Rowling', description: 'Author of the Harry Potter series', image: 'https://via.placeholder.com/100' },
     { id: 2, name: 'Stephen King', description: 'Horror and fantasy writer', image: 'https://via.placeholder.com/100' },
     { id: 3, name: 'Jane Austen', description: 'English novelist known for her social commentary', image: 'https://via.placeholder.com/100' },

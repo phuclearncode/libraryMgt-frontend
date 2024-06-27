@@ -1,204 +1,244 @@
 import React, { useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
-import { useDropzone } from 'react-dropzone';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload } from '@fortawesome/free-solid-svg-icons'; // Import icon
+import { useNavigate } from 'react-router-dom';
+import useNotification from '../../../hooks/useNotification';
+import Notification from '../../common/Notification';
+import OptionSelect from '../../common/OptionSelect';
+import CustomSelect from '../../common/CustomSelect';
+import MultipleSelect from '../../common/MultipleSelect';
+import ImageUpload from '../../common/ImageUpload';
+import PDFUpload from '../../common/PDFUpload';
+import TextInput from '../../common/TextInput';
+import Textarea from '../../common/TextArea';
 
 const EditBook = () => {
   const navigate = useNavigate();
-  const { isbn } = useParams();
-  
-  const [book, setBook] = useState({});
+  const { showError } = useNotification();
 
-  // Get the book from the backend based on the isbn
-  React.useEffect(() => {
-    fetch(`/api/books/${isbn}`)
-      .then((response) => response.json())
-      .then((data) => setBook(data));
-  }, [isbn]);
-
-  const UploadArea = styled.div`
-  border: 2px dashed #ccc;
-  padding: 20px;
-  border-radius: 5px;
-  text-align: center;
-  cursor: pointer;
-`;
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Update the book in the backend
-    fetch(`/api/books/${isbn}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(book),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Book updated:', data);
-        navigate('/admin/book'); // Redirect to the book list page after submission
-      });
-  };
-
-  const handleImageChange = (e) => {
-    setBook({ ...book, image: e.target.files[0] });
-  };
-
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: 'image/jpeg, image/png, image/jpg',
-    onDrop: (acceptedFiles) => {
-      handleImageChange({ target: { files: acceptedFiles } });
-    },
+  const [bookData, setBookData] = useState({
+    isbn: '',
+    title: '',
+    price: '',
+    totalPage: '',
+    status: 'ACTIVE',
+    publisher: '',
+    publicationYear: '',
+    language: 'English',
+    description: '',
+    authors: [],
+    category: '',
+    bookImage: null,
+    pdfSamples: [],
   });
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setBookData({ ...bookData, [name]: value });
+  };
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submitting book data:', bookData);
+  };
+
+  const options = [
+    { label: 'Option 1', value: 'option1' },
+    { label: 'Option 2', value: 'option2' },
+    { label: 'Option 3', value: 'option3' },
+    { label: 'Option 4', value: 'option4' },
+    { label: 'Option 5', value: 'option5' },
+  ];
+
+  const status = [
+    { label: 'Active', value: 'ACTIVE' },
+    { label: 'Inactive', value: 'INACTIVE' },
+  ];
+
+  const languages = [
+    { label: 'English', value: 'English' },
+    { label: 'Vietnamese', value: 'Vietnamese' },
+    { label: 'Japanese', value: 'Japanese' }
+  ];
+
+  const data = [
+    {
+      label: 'Manager',
+      options: [
+        { label: 'Jack', value: 'Jack' },
+        { label: 'Lucy', value: 'Lucy' },
+      ],
+    },
+    {
+      label: 'Engineer',
+      options: [
+        { label: 'Chloe', value: 'Chloe' },
+        { label: 'Lucas', value: 'Lucas' },
+      ],
+    },
+  ];
+
   return (
-    <>
-      <div className="d-flex justify-content-between" style={{ marginBottom: '20px' }}>
-        <h5>Chỉnh sửa sách</h5>
-        <Link
-          className="btn btn-primary"
-          to="/admin/book"
+    <div style={{ margin: '0 200px' }}>
+      <Notification />
+      <div style={{ marginBottom: '20px' }}>
+        <h5>Cập nhật sách</h5>
+      </div>
+      <Form onSubmit={handleSubmit}>
+        <Row>
+          <Col md={7}>
+            <TextInput
+              label="ISBN"
+              name="isbn"
+              value={bookData.isbn}
+              onChange={handleChange}
+              placeholder="Nhập ISBN"
+              type="text"
+            />
+
+            <TextInput
+              label="Tiêu đề sách"
+              name="title"
+              value={bookData.title}
+              onChange={handleChange}
+              placeholder="Nhập tiêu đề sách"
+              type="text"
+            />
+
+            <Row>
+              <Col>
+                <TextInput
+                  label="Giá"
+                  name="price"
+                  value={bookData.price}
+                  onChange={handleChange}
+                  placeholder="Nhập giá sách"
+                  type="text"
+                />
+              </Col>
+              <Col>
+                <TextInput
+                  label="Số trang"
+                  name="totalPage"
+                  value={bookData.totalPage}
+                  onChange={handleChange}
+                  placeholder="Nhập số trang"
+                  type="text"
+                />
+              </Col>
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label className="label">Trạng thái</Form.Label>
+                  <CustomSelect
+                    name="status"
+                    value={bookData.status}
+                    onChange={handleChange}
+                    data={status}
+                    placeholder="Chọn trạng thái"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <TextInput
+              label="Nhà xuất bản"
+              name="publisher"
+              value={bookData.publisher}
+              onChange={handleChange}
+              placeholder="Nhập nhà xuất bản"
+              type="text"
+            />
+
+            <Row>
+              <Col>
+                <TextInput
+                  label="Năm xuất bản"
+                  name="publicationYear"
+                  value={bookData.publicationYear}
+                  onChange={handleChange}
+                  placeholder="Nhập năm xuất bản"
+                  type="text"
+                />
+              </Col>
+              <Col>
+                <Form.Group className="mb-3">
+                  <Form.Label className="label">Ngôn ngữ</Form.Label>
+                  <CustomSelect
+                    name="language"
+                    value={bookData.language}
+                    onChange={handleChange}
+                    data={languages}
+                    placeholder="Chọn ngôn ngữ"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Textarea
+              label="Mô tả"
+              name="description"
+              value={bookData.description}
+              onChange={handleChange}
+              placeholder="Nhập mô tả"
+              rows={10}
+            />
+          </Col>
+
+          <Col md={5}>
+            <Form.Group className="mb-3">
+              <Form.Label className="label">Tác giả</Form.Label>
+              <MultipleSelect
+                name="authors"
+                value={bookData.authors}
+                onChange={handleChange}
+                options={options}
+                placeholder="Chọn tác giả"
+                mode="tags"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="label">Danh mục</Form.Label>
+              <OptionSelect
+                name="category"
+                value={bookData.category}
+                onChange={handleChange}
+                data={data}
+                placeholder="Chọn danh mục"
+              />
+            </Form.Group>
+
+            <ImageUpload
+              label="Tải ảnh sách"
+              name="bookImage"
+              value={bookData.bookImage}
+              onChange={handleChange}
+              showError={showError}
+            />
+
+            <PDFUpload
+              label="Tải mẫu PDF"
+              name="pdfSamples"
+              value={bookData.pdfSamples}
+              onChange={handleChange}
+              showError={showError}
+            />
+
+          </Col>
+        </Row>
+        <Button
+          type="submit"
           style={{
             fontSize: 'small',
             backgroundColor: '#F87555',
             border: 'none',
-          }}
-        >
-          <i className="bi bi-arrow-left-circle-fill"></i>
-          <span className="m-2">Quay lại</span>
-        </Link>
-      </div>
-      <Form onSubmit={handleSubmit}>
-        <Row>
-          <Col md={6}>
-            <Form.Group controlId="formIsbn">
-              <Form.Label>ISBN</Form.Label>
-              <Form.Control type="text" value={book.isbn} readOnly />
-            </Form.Group>
-
-            <Form.Group controlId="formTitle">
-              <Form.Label>Tiêu đề</Form.Label>
-              <Form.Control
-                type="text"
-                value={book.title}
-                onChange={(e) => setBook({ ...book, title: e.target.value })}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formPrice">
-              <Form.Label>Giá</Form.Label>
-              <Form.Control
-                type="number"
-                value={book.price}
-                onChange={(e) => setBook({ ...book, price: e.target.value })}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formImage">
-              <Form.Label>Hình ảnh</Form.Label>
-              <UploadArea {...getRootProps()}>
-                <input {...getInputProps()} />
-                <FontAwesomeIcon icon={faUpload} />
-                <p>Kéo và thả hình ảnh vào đây hoặc nhấp vào đây để tải lên</p>
-              </UploadArea>
-            </Form.Group>
-
-            <Form.Group controlId="formTotalPages">
-              <Form.Label>Tổng số trang</Form.Label>
-              <Form.Control
-                type="number"
-                value={book.totalPages}
-                onChange={(e) => setBook({ ...book, totalPages: e.target.value })}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formStock">
-              <Form.Label>Tồn kho</Form.Label>
-              <Form.Control
-                type="number"
-                value={book.stock}
-                onChange={(e) => setBook({ ...book, stock: e.target.value })}
-                required
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group controlId="formLanguage">
-              <Form.Label>Ngôn ngữ</Form.Label>
-              <Form.Control
-                type="text"
-                value={book.language}
-                onChange={(e) => setBook({ ...book, language: e.target.value })}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formPublisher">
-              <Form.Label>Nhà xuất bản</Form.Label>
-              <Form.Control
-                type="text"
-                value={book.publisher}
-                onChange={(e) => setBook({ ...book, publisher: e.target.value })}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formCategory">
-              <Form.Label>Danh mục</Form.Label>
-              <Form.Control
-                type="text"
-                value={book.category}
-                onChange={(e) => setBook({ ...book, category: e.target.value })}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formYear">
-              <Form.Label>Năm sản xuất</Form.Label>
-              <Form.Control
-                type="number"
-                value={book.year}
-                onChange={(e) => setBook({ ...book, year: e.target.value })}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formStatus">
-              <Form.Label>Trạng thái</Form.Label>
-              <Form.Control
-                type="text"
-                value={book.status}
-                onChange={(e) => setBook({ ...book, status: e.target.value })}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formAuthor">
-              <Form.Label>Tác giả</Form.Label>
-              <Form.Control
-                type="text"
-                value={book.author}
-                onChange={(e) => setBook({ ...book, author: e.target.value })}
-                required
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-        <div className="d-flex justify-content-center" style={{ marginTop: '20px' }}>
-          <Button variant="primary" type="submit" style={{ marginTop: '20px', fontSize: 'small', backgroundColor: '#F87555', border: 'none' }}>
-            Chỉnh sửa
-          </Button>
-        </div>
+            marginTop: '20px'
+          }}>
+          Lưu thay đổi
+        </Button>
       </Form>
-    </>
+    </div>
   );
-};
+}
 
 export default EditBook;

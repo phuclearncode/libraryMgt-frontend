@@ -3,6 +3,7 @@ import { Nav } from 'react-bootstrap';
 import Logo from '../../assets/image/logo.png';
 import { useAuth } from '../context/AuthContext.js';
 import { Link } from 'react-router-dom';
+import { GiBookshelf } from "react-icons/gi";
 
 
 const NavBar = () => {
@@ -24,7 +25,7 @@ const NavBar = () => {
 
     <Nav defaultActiveKey="/" className="flex-column bg-white d-flex align-items-center"
       style={{
-        height: '100vh',
+        height: "100%",
         borderLeft: "1px solid #DEDEE1",
         borderRight: "1px solid #DEDEE1",
         boxShadow: "10px 0 10px -10px rgba(0, 0, 0, 0.1), -10px 0 10px -10px rgba(0, 0, 0, 0.1)"
@@ -56,7 +57,7 @@ const NavBar = () => {
 
             <Nav.Item>
               <Nav.Link as={Link} to="/my-shelf" className="nav-link" style={{ color: '#8A8A8A', fontSize: 'small' }}>
-                <i className="bi bi-bookshelf"></i>
+                <GiBookshelf />
                 <span className='mx-2'>Sách của tôi</span>
               </Nav.Link>
             </Nav.Item>
@@ -74,8 +75,8 @@ const NavBar = () => {
         {librarian &&
           <Nav.Item>
             <Nav.Link as={Link} to="/admin" style={{ color: '#8A8A8A', fontSize: 'small' }}>
-              <i className="bi bi-person"></i>
-              <span className='mx-2'>Bảng điều khiển</span>
+            <i className="bi bi-columns-gap"></i>
+              <span className='mx-1'>Bảng điều khiển</span>
             </Nav.Link>
           </Nav.Item>
         }
@@ -84,7 +85,7 @@ const NavBar = () => {
           <Nav.Item>
             <Nav.Link as={Link} to="/admin/user" style={{ color: '#8A8A8A', fontSize: 'small' }}>
               <i className="bi bi-person"></i>
-              <span className='mx-2'>Người dùng</span>
+              <span className='mx-1'>Người dùng</span>
             </Nav.Link>
           </Nav.Item>
         }
@@ -93,7 +94,7 @@ const NavBar = () => {
           <Nav.Item>
             <Nav.Link as={Link} to="/admin/book" style={{ color: '#8A8A8A', fontSize: 'small' }}>
               <i className="bi bi-book"></i>
-              <span className='mx-2'>Sách</span>
+              <span className='mx-1'>Sách</span>
             </Nav.Link>
           </Nav.Item>
         }
@@ -105,8 +106,8 @@ const NavBar = () => {
               to="/admin/category"
               style={{ color: '#8A8A8A', fontSize: 'small' }}
             >
-              <i className="bi bi-card-list"></i>
-              <span className="mx-2">Danh mục</span>
+              <i class="bi bi-card-text"></i>
+              <span className="mx-1">Danh mục</span>
             </Nav.Link>
           </Nav.Item>
         )}
@@ -118,8 +119,8 @@ const NavBar = () => {
               to="/admin/author"
               style={{ color: '#8A8A8A', fontSize: 'small' }}
             >
-              <i className="bi bi-pencil-square"></i>
-              <span className="mx-2">Tác giả</span>
+              <i className="bi bi-person-vcard"></i>
+              <span className="mx-1">Tác giả</span>
             </Nav.Link>
           </Nav.Item>
         )}
