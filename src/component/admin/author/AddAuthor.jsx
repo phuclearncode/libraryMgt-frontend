@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { addAuthor } from '../../../service/AuthorService';
+import { useNavigate } from 'react-router-dom';
 import useNotification from '../../../hooks/useNotification';
 import Notification from '../../common/Notification';
 import '../../../assets/style/Style.css';

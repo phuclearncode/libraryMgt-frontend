@@ -20,7 +20,7 @@ export const ProtectedRoute = ({ element: Component }) => {
   }, [authenticated, navigate, location]);
 
   if (!authReady) {
-    return null; // or LoadingIndicator or any component while authentication is in progress
+    return null;
   }
 
   return authenticated ? Component : null;
@@ -44,7 +44,7 @@ export const AdminRoute = ({ element: Component }) => {
   }, [authenticated, admin, navigate, location]);
 
   if (!authReady) {
-    return null; // or LoadingIndicator or any component while authentication is in progress
+    return null;
   }
 
   return authenticated && admin ? Component : null;
@@ -68,7 +68,7 @@ export const LibrarianRoute = ({ element: Component }) => {
   }, [authenticated, librarian, navigate, location]);
 
   if (!authReady) {
-    return null; // or LoadingIndicator or any component while authentication is in progress
+    return null;
   }
 
   return authenticated && librarian ? Component : null;

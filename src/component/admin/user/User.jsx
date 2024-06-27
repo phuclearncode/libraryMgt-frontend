@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Row, Col, Table, Button, Dropdown } from 'react-bootstrap';
-import CustomModal from '../../common/CustomModal';
-import FormUser from '../../common/FormUser';
+import { Table } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getUsersByRole } from '../../../service/UserService';
 import useNotification from '../../../hooks/useNotification';

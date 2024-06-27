@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Row, Col } from 'react-bootstrap';
+import React, { useState} from 'react';
+import { Table} from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAuthors, deleteAuthor } from '../../../service/AuthorService';
-import CustomModal from '../../common/CustomModal';
-import FormAuthor from '../../common/FormAuthor';
+
 
 const Author = () => {
   const navigate = useNavigate();
 
+
   const [authors, setAuthors] = useState([]);
+
 
   useEffect(() => {
     const fetchAuthors = async () => {
@@ -73,20 +73,10 @@ const Author = () => {
           </tr>
         </thead>
         <tbody>
-            {authors.map((author) => (
-              <tr key={author.id}>
-              <td className="align-middle">
-                <div className="d-flex align-items-center">
-                  <img
-                    src={author.image ? author.image : 'https://th.bing.com/th/id/OIP.Fogk0Q6C7GEQEdVyrbV9MwHaHa?rs=1&pid=ImgDetMain'} 
-                    alt={author.name}
-                    style={{ width: '70px', height: 'auto', marginRight: '20px' }}
-                  />
-                  <div>
-                    {author.name}
-                  </div>
-                </div>
-              </td>
+
+          {authors.map((author) => (
+            <tr key={author.id}>
+              <td className="align-middle">{author.name}</td>
               <td className="align-middle">{author.description}</td>
               <td className="align-middle">
                 <Link

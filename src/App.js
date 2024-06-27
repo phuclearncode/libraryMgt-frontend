@@ -17,7 +17,7 @@ import User from "./component/admin/user/User";
 import AddUser from "./component/admin/user/AddUser";
 import EditUser from "./component/admin/user/EditUser";
 import Book from "./component/admin/book/Book";
-
+import BookDetail from "./component/admin/book/BookDetail";
 import Author from "./component/admin/author/Author";
 import Category from "./component/admin/category/Category";
 import AddBook from "./component/admin/book/AddBook";
@@ -70,6 +70,8 @@ const App = () => {
             <Route path="book" element={<LibrarianRoute element={<Book />} />} />
             <Route path="book/add" element={<LibrarianRoute element={<AddBook />} />} />
             <Route path="book/edit/:isbn" element={<LibrarianRoute element={<EditBook />} />} />
+            {/* <Route path="book/delete/:isbn" element={<LibrarianRoute element={<EditBook />} />} /> */}
+            <Route path="book/detail/:isbn" element={<LibrarianRoute element={<BookDetail />} />} />
 
             <Route path="category" element={<LibrarianRoute element={<Category />} />} /> 
             <Route path="category/add" element={<LibrarianRoute element={<AddCategory />} />} />

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Row, Col, Table, Button } from 'react-bootstrap';
-import { getAllBooks, addBook, updateBook, deleteBook } from '../../../service/BookService';
+import { Table } from 'react-bootstrap';
 
 const Book = () => {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ const Book = () => {
         "category": "Technology",
         "stock": 15,
         "status": "Available",
-        "imageUrl": "path/to/image1.jpg"
+        "imageUrl": "https://m.media-amazon.com/images/I/71GsZGf3opL._SL1500_.jpg"
       },
       {
         "id": 2,
@@ -88,7 +87,7 @@ const Book = () => {
             border: 'none',
           }}
         >
-          <i class="bi bi-plus-lg"></i>
+          <i className="bi bi-plus-lg"></i>
           <span className="m-2">Thêm</span>
         </Link>
       </div>
@@ -96,11 +95,12 @@ const Book = () => {
         <thead>
           <tr>
             <th>Tiêu đề</th>
+            <th>Thời gian sửa đổi</th>
+            <th>Người sửa đổi</th>
             <th>Đánh giá</th>
             <th>Danh mục</th>
             <th>Tồn kho</th>
             <th>Trạng thái</th>
-            <th></th>
             <th></th>
           </tr>
         </thead>
@@ -116,10 +116,12 @@ const Book = () => {
                   />
                   <div>
                     {book.name}
-                    <div style={{fontSize: 'x-small'}}>{book.author}, {book.publishedYear}</div>
+                    <div style={{ fontSize: 'x-small' }}>{book.author}, {book.publishedYear}</div>
                   </div>
                 </div>
               </td>
+              <td className="align-middle">2021-09-01 </td>
+              <td className="align-middle">Dien Nguyen</td>
               <td className="align-middle">{book.rating}/5.0</td>
               <td className="align-middle">
                 {book.subcategory}
@@ -129,7 +131,7 @@ const Book = () => {
               <td className="align-middle">{book.status}</td>
               <td className="align-middle">
                 <Link
-                  to={`/admin/book/edit/${book.id}`}
+                  to={`/admin/book/detail/${book.id}`}
                   style={{
                     fontSize: 'small',
                     backgroundColor: '#fff',
@@ -138,8 +140,22 @@ const Book = () => {
                     textDecoration: 'none'
                   }}
                 >
-                  <i className="bi bi-pen"></i>
-                  <span className='m-2'>Sửa</span>
+                  <i className="bi bi-journal-bookmark"></i>
+                  <span className='m-1'>Chi tiết</span>
+                </Link>
+                <Link
+                  to={`/admin/book/edit/${book.id}`}
+                  style={{
+                    fontSize: 'small',
+                    backgroundColor: '#fff',
+                    border: 'none',
+                    color: '#000',
+                    textDecoration: 'none',
+                    margin: '0 5px'
+                  }}
+                >
+                  <i className="bi bi-pencil-square"></i>
+                  <span className='m-1'>Sửa</span>
                 </Link>
                 <Link
                   to={`/admin/book/delete/${book.id}`}
@@ -151,10 +167,11 @@ const Book = () => {
                     textDecoration: 'none'
                   }}
                 >
-                  <i class="bi bi-trash3"></i>
-                  <span className='m-2'>Xóa</span>
+                  <i className="bi bi-trash3"></i>
+                  <span className='m-1'>Xóa</span>
                 </Link>
               </td>
+
             </tr>
           ))}
         </tbody>
