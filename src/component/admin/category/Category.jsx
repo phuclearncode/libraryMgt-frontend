@@ -1,23 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Row, Col } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { getCategories } from '../../../service/CategoryService';
+import { deleteCategory } from '../../../service/CategoryService';
 
 const Category = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([
-    { id: 1, name: 'Fiction', description: 'Fictional works', parent_id: null },
-    { id: 2, name: 'Non-fiction', description: 'Non-fictional works', parent_id: null },
-    { id: 3, name: 'Fantasy', description: 'Fantasy books', parent_id: 1 },
-    { id: 4, name: 'Science Fiction', description: 'Sci-fi books', parent_id: 1 },
-    { id: 5, name: 'Biographies', description: 'Biographies and memoirs', parent_id: 2 },
-  ]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getCategories();
+        if (response && response.status === 200) {
+          const data = response.data[0];  
+          if (data && data.categoryList) { 
+            setCategories(data.categoryList); 
+          }
+        } else {
+          console.error("API did not return expected data structure:", response);
+        }
+      } catch (error) {
+        console.error(error);
+      } 
+    };
+    fetchCategories();
+  }, []);
+
 
   const findCategoryById = (categoryId) => {
     return categories.find(cat => cat.id === categoryId);
   };
 
+  const handleDelete = async (categoryId) => {
+    if (window.confirm("Bạn chac chua?")) {
+      try {
+        await deleteCategory(categoryId);
+        setCategories(categories.filter(cat => cat.id !== categoryId)); 
+      } catch (error) {
+        console.error("Error deleting category:", error);
+      }
+    }
+  };
 
+  const handleAdd = () => {
+    navigate('category/add');
+  };
+
+  const handleEdit = (categoryId) => {
+    navigate(`category/edit/${categoryId}`);
+  };
+  
   return (
     <div>
       <div className="d-flex justify-content-between" style={{ marginBottom: '20px' }}>
@@ -31,11 +64,12 @@ const Category = () => {
             border: 'none',
           }}
         >
-          <i class="bi bi-plus-lg"></i>
+          <i class="bi bi-plus-lg" onClick={() => handleAdd()}></i>
           <span className="m-2">Thêm</span>
         </Link>
       </div>
-      <Table style={{ fontSize: 'small' }}>
+      {categories.length > 0 ? (
+        <Table style={{ fontSize: 'small' }}>
         <thead>
           <tr>
             <th>Danh mục</th>
@@ -44,8 +78,8 @@ const Category = () => {
           </tr>
         </thead>
         <tbody>
-          {categories.map((category) => (
-            <tr key={category.id}>
+            {categories.map((category) => (
+              <tr key={category.id}>
               <td className="align-middle">{category.name}</td>
               <td className="align-middle">{category.parent_id ? findCategoryById(category.parent_id).name : ''}</td>
               <td className="align-middle">
@@ -59,11 +93,12 @@ const Category = () => {
                     textDecoration: 'none'
                   }}
                 >
-                  <i className="bi bi-pen"></i>
-                  <span className='m-2'>Sửa</span>
+                  <i className="bi bi-pen" onClick={() => handleEdit(category.id)}></i>
+                  <span className='m-2'onClick={() => handleEdit(category.id)}>Sửa</span>
                 </Link>
+                 {/* Chỗ này có cần chuyển hướng sang delete/${category.id} không? */}
                 <Link
-                  to={`/admin/category/delete/${category.id}`}
+                  // to={`/admin/category/delete/${category.id}`}
                   style={{
                     fontSize: 'small',
                     backgroundColor: '#fff',
@@ -72,14 +107,17 @@ const Category = () => {
                     textDecoration: 'none'
                   }}
                 >
-                  <i class="bi bi-trash3"></i>
-                  <span className='m-2'>Xóa</span>
+                    <i className="bi bi-trash3" onClick={() => handleDelete(category.id)}></i> 
+                    <span className='m-2' onClick={() => handleDelete(category.id)}>Xóa</span>
+                 
                 </Link>
               </td>
             </tr>
           ))}
         </tbody>
-      </Table>
+      </Table>) : (
+        <p>No categories found.</p>
+      )}
     </div>
   );
 };
