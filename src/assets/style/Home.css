@@ -2,7 +2,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    position: relative; /* Đảm bảo các phần tử con có thể được định vị tương đối */
+    position: relative;/* Đảm bảo các phần tử con có thể được định vị tương đối */
+    height: 100vh;
   }
   
   .book-item {

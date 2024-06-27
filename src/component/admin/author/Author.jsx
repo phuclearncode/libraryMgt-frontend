@@ -7,9 +7,9 @@ const Author = () => {
   const navigate = useNavigate();
 
   const [authors, setAuthors] = useState([
-    { id: 1, name: 'J.K. Rowling', description: 'Author of the Harry Potter series', image: 'https://via.placeholder.com/100' },
-    { id: 2, name: 'Stephen King', description: 'Horror and fantasy writer', image: 'https://via.placeholder.com/100' },
-    { id: 3, name: 'Jane Austen', description: 'English novelist known for her social commentary', image: 'https://via.placeholder.com/100' },
+    { id: 1, name: 'J.K. Rowling', description: 'Author of the Harry Potter series' },
+    { id: 2, name: 'Stephen King', description: 'Horror and fantasy writer' },
+    { id: 3, name: 'Jane Austen', description: 'English novelist known for her social commentary' },
   ]);
 
 
@@ -41,18 +41,7 @@ const Author = () => {
         <tbody>
           {authors.map((author) => (
             <tr key={author.id}>
-              <td className="align-middle">
-                <div className="d-flex align-items-center">
-                  <img
-                    src={author.image}
-                    alt={author.name}
-                    style={{ width: '70px', height: 'auto', marginRight: '20px' }}
-                  />
-                  <div>
-                    {author.name}
-                  </div>
-                </div>
-              </td>
+              <td className="align-middle">{author.name}</td>
               <td className="align-middle">{author.description}</td>
               <td className="align-middle">
                 <Link
