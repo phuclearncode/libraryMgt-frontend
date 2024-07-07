@@ -1,80 +1,118 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Row, Col } from "react-bootstrap";
+import { Form, Button, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../../assets/style/Style.css";
 import Notification from "../../common/Notification";
 import useNotification from "../../../hooks/useNotification";
-import { updateCategory, getCategories } from "../../../service/CategoryService";
+import { updateCategory, getCategoryById, getParentCategories } from "../../../service/CategoryService";
 import { useAuth } from "../../context/AuthContext";
+import TextInput from "../../common/TextInput";
+import CustomSelect from "../../common/CustomSelect";
 
 const EditCategory = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { id } = useParams();
-  const { showError, showSuccess } = useNotification();
-  const [categoryName, setCategoryName] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [categoryOptions, setCategoryOptions] = useState([]);
-  const [selectedParentCategory, setSelectedParentCategory] = useState(null); // Thay đổi state
-  const [categories, setCategories] = useState([]);
+  const { showError } = useNotification();
+  const [submitting, setSubmitting] = useState(false);
+  const [parentCategories, setParentCategories] = useState([]);
+
+  const [formData, setFormData] = useState({
+    userId: user.id,
+    name: "",
+    parentId: ""
+  });
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const response = await getCategories();
-            if (response.status === 200 && response.data.length > 0) {
-                const categories = response.data[0].categoryList; 
-               
-                setCategoryOptions(categories.map(category => ({
-                    name: category.name,
-                    id: category.id,
-                })));
+      try {
+        const categoriesData = await getParentCategories();
 
-                const categoryToEdit = categories.find(cat => cat.id === parseInt(id));
-                if (categoryToEdit) {
-                    setCategoryName(categoryToEdit.name);
-                    setSelectedParentCategory(categoryToEdit.parentCategory?.id || ''); 
-                } else {
-                    showError('Không tìm thấy danh mục');
-                    navigate('/admin/category');
-                }
-            } else {
-                showError('Không có danh mục nào được tìm thấy.'); 
-                navigate('/admin/category');
-            }
-        } catch (error) {
-            showError('Lỗi khi tải dữ liệu danh mục');
+        console.log("Parent categories data: ", categoriesData);
+        if (categoriesData.status === 200) {
+          setParentCategories(categoriesData.data);
+        } else {
+          showError('Không thể lấy danh mục cha');
         }
+      }
+      catch (error) {
+        console.error("Lỗi khi lấy danh mục cha:", error);
+        showError('Lỗi khi lấy danh mục cha');
+      }
     };
+
     fetchData();
-}, [id]);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const category = await getCategoryById(id);
+        if (category.status === 200) {
+          setFormData({
+            userId: user.id,
+            name: category.data.name,
+            parentId: category.data.parentId !== undefined ? category.data.parentId : null        
+          });
+        } else {
+          showError(category.message);
+        }
+      } catch (error) {
+        console.error("Error fetching category:", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    const name = e.target.name;
+
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value === undefined ? "" : value,
+    }));
+  };
+
+  console.log("formData: ", formData);
+
+  const validateForm = () => {
+    const { name } = formData;
+    if (!name) {
+      return false;
+    }
+    return true;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const updatedCategory = {
-        name: categoryName,
-        parentId: selectedParentCategory, 
-        updatedById: user?.id,
-      };
-       await updateCategory(id, updatedCategory);
-      showSuccess("Cập nhật danh mục thành công");
-      navigate("/admin/category");
-    } catch (error) {
-      showError("Lỗi khi cập nhật danh mục");
+    if (!validateForm()) {
+      showError("Vui lòng điền đầy đủ thông tin");
+      return;
     }
-  };
 
-  const handleParentCategoriesChange = (selectedOptions) => {
-    setSelectedCategories(selectedOptions);
-  };
+    setSubmitting(true);
+    const timer = new Promise((resolve) => setTimeout(resolve, 2000));
 
-  const options = categories.map((category) => ({
-    label: category.name,
-    value: category.id,
-  }));
-  console.log(selectedCategories);
+    try {
+      const response = await updateCategory(id, formData);
+      await timer;
+
+      if (response.status === 200) {
+        navigate("/admin/category", { state: { success: response.message } });
+      } else {
+        showError(response.message);
+      }
+    } catch (error) {
+      console.error("Error updating category:", error);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+
 
   return (
     <div style={{ margin: "0 200px" }}>
@@ -83,40 +121,35 @@ const EditCategory = () => {
         <h5>Cập nhật danh mục</h5>
       </div>
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label className="label">Danh mục</Form.Label>
-          <Form.Control
-            className="field-input"
-            type="text"
-            placeholder="Nhập tên danh mục"
-            style={{ fontSize: "small" }}
-            name="name"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-          />
-        </Form.Group>
+
+        <TextInput
+          label="Danh mục"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Nhập tên danh mục"
+          type="text"
+        />
 
         <Form.Group className="mb-3">
           <Form.Label className="label">Danh mục cha</Form.Label>
-
-          <Form.Select
-            value={selectedParentCategory}
-            style={{ fontSize: "small" }}
-            onChange={(e) => setSelectedParentCategory(e.target.value)}
-          >
-            <option value="">Chọn danh mục cha</option>
-            {categoryOptions.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </Form.Select>
+          <CustomSelect
+            label="Danh mục cha"
+            name="parentId"
+            value={formData.parentId === 0 ? "" : formData.parentId}
+            onChange={handleChange}
+            placeholder="Chọn danh mục cha"
+            data={parentCategories}
+            valueType="id"
+          />
         </Form.Group>
 
         <Button
-          type="submit"
-          style={{ fontSize: "small",  backgroundColor: "#F87555",  border: "none",}}>
-          Lưu thay đổi
+          type='submit'
+          style={{ fontSize: 'small', backgroundColor: '#F87555', border: 'none' }}
+          disabled={submitting}
+        >
+          {submitting ? <Spinner animation="border" size="sm" /> : "Lưu thay đổi"}
         </Button>
       </Form>
     </div>

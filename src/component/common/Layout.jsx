@@ -1,18 +1,18 @@
 import React from 'react'
 import NavBar from '../common/NavBar';
 import TopNav from '../common/TopNav';
-import {Row, Col } from 'react-bootstrap';
+import { Row, Col} from 'react-bootstrap';
 import { Outlet } from 'react-router-dom';
 
 
-const Home = () => {
+const Layout = () => {
   return (
-    <div>
+    <div style={{height: '100vh'}}>
         <Row>
             <Col className='col-2'>
               <NavBar />
             </Col>
-            <Col className='col-10' style={{ padding: "10px 10px 0 0", height: '100vh' }}>
+            <Col className='col-10' style={{ padding: "10px 10px 0 0"}}>
               <TopNav />
               <Outlet />
             </Col> 
@@ -21,4 +21,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Layout

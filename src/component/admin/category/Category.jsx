@@ -1,58 +1,98 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Row, Col } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { getCategories } from '../../../service/CategoryService';
-import { deleteCategory } from '../../../service/CategoryService';
+import { Table, Button } from 'react-bootstrap';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { getCategories, deleteCategory, getCategoryById } from '../../../service/CategoryService';
+import Notification from '../../common/Notification';
+import useNotification from '../../../hooks/useNotification';
+import CustomModal from '../../common/CustomModal';
 
 const Category = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [categories, setCategories] = useState([]);
+  const { showSuccess, showError } = useNotification();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [submittingDelete, setSubmittingDelete] = useState(false);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    if (location.state && location.state.success) {
+      showSuccess(location.state.success);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, showSuccess, navigate]);
+
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const response = await getCategories();
-        if (response && response.status === 200) {
-          const data = response.data[0];  
-          if (data && data.categoryList) { 
-            setCategories(data.categoryList); 
-          }
+        const categoriesData = await getCategories();
+
+        console.log("Categories data: ", categoriesData);
+        if (categoriesData.status === 200) {
+          setCategories(categoriesData.data);
         } else {
-          console.error("API did not return expected data structure:", response);
+          showError('Không thể lấy danh mục');
         }
       } catch (error) {
-        console.error(error);
-      } 
+        console.error("Lỗi khi lấy danh mục:", error);
+        showError('Lỗi khi lấy danh mục');
+      }
     };
-    fetchCategories();
+
+    fetchData();
   }, []);
 
+  console.log("Categories: ", categories);
 
-  const findCategoryById = (categoryId) => {
-    return categories.find(cat => cat.id === categoryId);
+  const handleShowDeleteModal = (category) => {
+    setCategoryToDelete(category);
+    setShowDeleteModal(true);
   };
 
-  const handleDelete = async (categoryId) => {
-    if (window.confirm("Bạn chac chua?")) {
-      try {
-        await deleteCategory(categoryId);
-        setCategories(categories.filter(cat => cat.id !== categoryId)); 
-      } catch (error) {
-        console.error("Error deleting category:", error);
+  const handleCloseDeleteModal = () => {
+    setCategoryToDelete(null);
+    setShowDeleteModal(false);
+  };
+
+  const handleDeleteCategory = async () => {
+    if (!categoryToDelete) return;
+
+    setSubmittingDelete(true);
+    const timer = new Promise(resolve => setTimeout(resolve, 2000));
+
+
+    try {
+      const response = await deleteCategory(categoryToDelete.id);
+      await timer;
+
+      if (response.status === 200) {
+        showSuccess('Xóa danh mục thành công');
+        setCategories(categories.filter(cat => cat.id !== categoryToDelete.id));
+      } else {
+        showError('Không thể xóa danh mục');
       }
+    } catch (error) {
+      console.error("Lỗi khi xóa danh mục:", error);
+      showError('Lỗi khi xóa danh mục');
+    } finally {
+      setSubmittingDelete(false);
+      handleCloseDeleteModal();
     }
   };
 
-  const handleAdd = () => {
-    navigate('category/add');
+  const getParentCategoryName = async (parentId) => {
+    try {
+      const parentCategory = await getCategoryById(parentId);
+      return parentCategory.name;
+    } catch (error) {
+      console.error("Lỗi khi lấy danh mục cha:", error);
+      return 'Không có';
+    }
   };
 
-  const handleEdit = (categoryId) => {
-    navigate(`category/edit/${categoryId}`);
-  };
-  
   return (
     <div>
+      <Notification />
       <div className="d-flex justify-content-between" style={{ marginBottom: '20px' }}>
         <h5>Danh mục</h5>
         <Link
@@ -64,60 +104,77 @@ const Category = () => {
             border: 'none',
           }}
         >
-          <i class="bi bi-plus-lg" onClick={() => handleAdd()}></i>
-          <span className="m-2">Thêm</span>
+          <i className="bi bi-plus-lg"></i>
+          <span className="m-1">Thêm</span>
         </Link>
       </div>
       {categories.length > 0 ? (
-        <Table style={{ fontSize: 'small' }}>
-        <thead>
-          <tr>
-            <th>Danh mục</th>
-            <th>Danh mục cha</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
+        <Table style={{ fontSize: 'small', boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}>
+          <thead>
+            <tr>
+              <th>Danh mục</th>
+              <th>Danh mục cha</th>
+              <th>Thời gian sửa đổi</th>
+              <th>Người sửa đổi</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
             {categories.map((category) => (
               <tr key={category.id}>
-              <td className="align-middle">{category.name}</td>
-              <td className="align-middle">{category.parent_id ? findCategoryById(category.parent_id).name : ''}</td>
-              <td className="align-middle">
-                <Link
-                  to={`/admin/category/edit/${category.id}`}
-                  style={{
-                    fontSize: 'small',
-                    backgroundColor: '#fff',
-                    border: 'none',
-                    color: '#000',
-                    textDecoration: 'none'
-                  }}
-                >
-                  <i className="bi bi-pen" onClick={() => handleEdit(category.id)}></i>
-                  <span className='m-2'onClick={() => handleEdit(category.id)}>Sửa</span>
-                </Link>
-                 {/* Chỗ này có cần chuyển hướng sang delete/${category.id} không? */}
-                <Link
-                  // to={`/admin/category/delete/${category.id}`}
-                  style={{
-                    fontSize: 'small',
-                    backgroundColor: '#fff',
-                    border: 'none',
-                    color: '#000',
-                    textDecoration: 'none'
-                  }}
-                >
-                    <i className="bi bi-trash3" onClick={() => handleDelete(category.id)}></i> 
-                    <span className='m-2' onClick={() => handleDelete(category.id)}>Xóa</span>
-                 
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>) : (
-        <p>No categories found.</p>
+                <td className="align-middle">{category.name}</td>
+                <td className="align-middle">{category.parentName}</td>
+                <td className="align-middle">{category.updatedAt}</td>
+                <td className="align-middle">{category.updatedBy}</td>
+                <td className="align-middle">
+                  <Button
+                    as={Link}
+                    to={`/admin/category/edit/${category.id}`}
+                    style={{
+                      fontSize: 'small',
+                      backgroundColor: '#fff',
+                      border: 'none',
+                      color: '#000',
+                      padding: '0'
+                    }}
+                  >
+                    <i className="bi bi-pen"></i>
+                    <span className='m-1'>Sửa</span>
+                  </Button>
+                  <Button
+                    as={Button}
+                    onClick={() => handleShowDeleteModal(category)}
+                    style={{
+                      fontSize: 'small',
+                      backgroundColor: '#fff',
+                      border: 'none',
+                      color: '#000',
+                      padding: '0',
+                      marginLeft: '5px'
+                    }}
+                  >
+                    <i className="bi bi-trash3"></i>
+                    <span className='m-1'>Xóa</span>
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      ) : (
+        <p>Không có danh mục nào được tìm thấy</p>
       )}
+
+      <CustomModal
+        show={showDeleteModal}
+        handleClose={handleCloseDeleteModal}
+        title="Xác nhận xóa danh mục"
+        handleSave={handleDeleteCategory}
+        submitting={submittingDelete}
+        hasFooter={true}
+      >
+        <p>Bạn có chắc chắn muốn xóa danh mục <strong>{categoryToDelete?.name}</strong> không?</p>
+      </CustomModal>
     </div>
   );
 };

@@ -1,21 +1,96 @@
-import React, { useState } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Form, Button, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import useNotification from '../../../hooks/useNotification';
 import Notification from '../../common/Notification';
-import OptionSelect from '../../common/OptionSelect';
 import CustomSelect from '../../common/CustomSelect';
 import MultipleSelect from '../../common/MultipleSelect';
+import OptionSelect from '../../common/OptionSelect';
 import ImageUpload from '../../common/ImageUpload';
-import PDFUpload from '../../common/PDFUpload';
+import MultipleImageUpload from '../../common/MultipleImageUpload';
 import TextInput from '../../common/TextInput';
 import Textarea from '../../common/TextArea';
+import { getAuthors } from '../../../service/AuthorService';
+import { getCategories } from '../../../service/CategoryService';
+import { useAuth } from '../../context/AuthContext';
+import { addBook, uploadBookImage, uploadBookSampleImages } from '../../../service/BookService';
 
 const AddBook = () => {
   const navigate = useNavigate();
-  const { showError } = useNotification();
+  const { showError, showSuccess } = useNotification();
+  const [authors, setAuthors] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const { user } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchAuthors = async () => {
+      try {
+        const response = await getAuthors();
+        if (response.status === 200) {
+          setAuthors(response.data);
+        } else {
+          showError(response.message);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy tác giả:", error);
+        showError('Lỗi khi lấy tác giả');
+      }
+    };
+
+    fetchAuthors();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getCategories();
+        if (response.status === 200) {
+          setCategories(response.data);
+        } else {
+          showError(response.message);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy danh mục:", error);
+        showError('Lỗi khi lấy danh mục');
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  console.log('Categories sssss:', categories);
+
+  const status = [
+    { name: 'Có sẵn', value: 'ACTIVE' },
+    { name: 'Không hoạt động', value: 'INACTIVE' },
+    { name: 'Hết hàng', value: 'OUT_OF_STOCK' }
+  ];
+
+  const languages = [
+    { name: 'Tiếng Anh', value: 'English' },
+    { name: 'Tiếng Việt', value: 'Vietnamese' },
+    { name: 'Tiếng Nhật', value: 'Japanese' },
+    { name: 'Tiếng Tây Ban Nha', value: 'Spanish' },
+    { name: 'Tiếng Trung Quốc', value: 'Chinese' },
+    { name: 'Tiếng Pháp', value: 'French' },
+    { name: 'Tiếng Đức', value: 'German' },
+    { name: 'Tiếng Nga', value: 'Russian' },
+    { name: 'Tiếng Bồ Đào Nha', value: 'Portuguese' },
+    { name: 'Tiếng Ý', value: 'Italian' },
+    { name: 'Tiếng Hàn', value: 'Korean' },
+    { name: 'Tiếng Hindi', value: 'Hindi' },
+    { name: 'Tiếng Ả Rập', value: 'Arabic' },
+    { name: 'Tiếng Hà Lan', value: 'Dutch' },
+    { name: 'Tiếng Thụy Điển', value: 'Swedish' },
+    { name: 'Tiếng Thổ Nhĩ Kỳ', value: 'Turkish' },
+    { name: 'Tiếng Ba Lan', value: 'Polish' },
+    { name: 'Tiếng Thái', value: 'Thai' }
+  ];
+
 
   const [bookData, setBookData] = useState({
+    userId: user.id,
     isbn: '',
     title: '',
     price: '',
@@ -23,61 +98,103 @@ const AddBook = () => {
     status: 'ACTIVE',
     publisher: '',
     publicationYear: '',
-    language: 'English',
+    language: '',
     description: '',
     authors: [],
-    category: '',
-    bookImage: null,
-    pdfSamples: [],
+    categories: []
   });
 
+  const [bookImage, setBookImage] = useState(null);
+
+  const [bookSampleImages, setBookSampleImages] = useState([]);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setBookData({ ...bookData, [name]: value });
+    const { name, value, files } = e.target;
+
+    if (name === 'bookImage') {
+      setBookImage(files || null);
+    } else if (name === 'bookSampleImages') {
+      setBookSampleImages(files || []);
+    } else {
+      setBookData({ ...bookData, [name]: value });
+    }
+  };
+
+  console.log('Submitting book data:', bookData);
+  console.log('Book image:', bookImage);
+  console.log('Book sample images:', bookSampleImages);
+
+  const validateForm = () => {
+    const { isbn, title, price, totalPage, publicationYear, language, authors} = bookData;
+    if (!isbn || !title || !price || !totalPage || !publicationYear || !language || authors.length === 0) {
+      showError('Vui lòng nhập đầy đủ thông tin');
+      return false;
+    } else if (!bookImage) {
+      showError('Vui lòng chọn ảnh sách');
+      return false;
+    } else if (bookSampleImages.length === 0) {
+      showError('Vui lòng chọn ít nhất một mẫu ảnh xem trước');
+      return false;
+    }
+
+    return true;
   };
 
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting book data:', bookData);
-  };
 
-  const options = [
-    { label: 'Option 1', value: 'option1' },
-    { label: 'Option 2', value: 'option2' },
-    { label: 'Option 3', value: 'option3' },
-    { label: 'Option 4', value: 'option4' },
-    { label: 'Option 5', value: 'option5' },
-  ];
+    if (!validateForm()) {
+      return;
+    }
 
-  const status = [
-    { label: 'Active', value: 'ACTIVE' },
-    { label: 'Inactive', value: 'INACTIVE' },
-  ];
+    setSubmitting(true);
+    const timer = new Promise(resolve => setTimeout(resolve, 2000));
 
-  const languages = [
-    { label: 'English', value: 'English' },
-    { label: 'Vietnamese', value: 'Vietnamese' },
-    { label: 'Japanese', value: 'Japanese' }
-  ];
+    try {
+      const response = await addBook(bookData);
+      await timer;
 
-  const data = [
-    {
-      label: 'Manager',
-      options: [
-        { label: 'Jack', value: 'Jack' },
-        { label: 'Lucy', value: 'Lucy' },
-      ],
-    },
-    {
-      label: 'Engineer',
-      options: [
-        { label: 'Chloe', value: 'Chloe' },
-        { label: 'Lucas', value: 'Lucas' },
-      ],
-    },
-  ];
+      console.log('Add book response:', response);
+
+      if (response.status === 201) {
+        showSuccess('Thêm sách thành công');
+        setBookData({
+          userId: user.id,
+          isbn: '',
+          title: '',
+          price: '',
+          totalPage: '',
+          status: 'ACTIVE',
+          publisher: '',
+          publicationYear: '',
+          language: '',
+          description: '',
+          authors: [],
+          categories: []
+        });
+
+        
+        if (bookImage) {
+          await uploadBookImage(response.data, bookImage);
+        }
+
+        if (bookSampleImages.length > 0) {
+          await uploadBookSampleImages(response.data, bookSampleImages);
+        }
+
+        navigate('/admin/book', { state: { success: response.message } });
+      } else {
+        showError(response.message);
+      }
+    } catch (error) {
+      console.error('Lỗi khi thêm sách:', error);
+      showError('Lỗi khi thêm sách');
+    } finally {
+      setSubmitting(false);
+    }
+
+  }
 
   return (
     <div style={{ margin: '0 200px' }}>
@@ -136,6 +253,7 @@ const AddBook = () => {
                     onChange={handleChange}
                     data={status}
                     placeholder="Chọn trạng thái"
+                    valueType="value"
                   />
                 </Form.Group>
               </Col>
@@ -192,7 +310,7 @@ const AddBook = () => {
                 name="authors"
                 value={bookData.authors}
                 onChange={handleChange}
-                options={options}
+                options={authors}
                 placeholder="Chọn tác giả"
                 mode="tags"
               />
@@ -201,26 +319,27 @@ const AddBook = () => {
             <Form.Group className="mb-3">
               <Form.Label className="label">Danh mục</Form.Label>
               <OptionSelect
-                name="category"
-                value={bookData.category}
+                name="categories"
+                value={bookData.categories}
                 onChange={handleChange}
-                data={data}
+                data={categories}
                 placeholder="Chọn danh mục"
+                mode="tags"
               />
             </Form.Group>
 
             <ImageUpload
               label="Tải ảnh sách"
               name="bookImage"
-              value={bookData.bookImage}
+              value={bookImage}
               onChange={handleChange}
               showError={showError}
             />
 
-            <PDFUpload
-              label="Tải mẫu PDF"
-              name="pdfSamples"
-              value={bookData.pdfSamples}
+            <MultipleImageUpload
+              label="Tải mẫu ảnh xem trước"
+              name="bookSampleImages"
+              value={bookSampleImages}
               onChange={handleChange}
               showError={showError}
             />
@@ -228,14 +347,11 @@ const AddBook = () => {
           </Col>
         </Row>
         <Button
-          type="submit"
-          style={{
-            fontSize: 'small',
-            backgroundColor: '#F87555',
-            border: 'none',
-            marginTop: '20px'
-          }}>
-          Lưu thay đổi
+          type='submit'
+          style={{ fontSize: 'small', backgroundColor: '#F87555', border: 'none' }}
+          disabled={submitting}
+        >
+          {submitting ? <Spinner animation="border" size="sm" /> : "Lưu thay đổi"}
         </Button>
       </Form>
     </div>
