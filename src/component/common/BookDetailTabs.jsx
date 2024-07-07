@@ -5,7 +5,9 @@ import AuthorsTab from './AuthorsTab';
 import ReviewsTab from './ReviewsTab';
 
 const BookDetailTabs = ({ bookDetail }) => {
-    const { copies, authors, reviews } = bookDetail;
+    const { bookCopies, authors, reviews } = bookDetail;
+
+    console.log('BookDetailTabs:', bookDetail);
 
     return (
         <div style={{ height: '100%' }}>
@@ -29,7 +31,7 @@ const BookDetailTabs = ({ bookDetail }) => {
                     <Col md={12} style={{ height: '100%' }}>
                         <Tab.Content style={{ height: '100%' }}>
                             <Tab.Pane eventKey="copies" style={{ height: '100%' }}>
-                                <CopiesTab copies={copies} />
+                                <CopiesTab bookCopies={bookCopies} />
                             </Tab.Pane>
                             <Tab.Pane eventKey="authors" style={{ height: '100%' }}>
                                 <AuthorsTab authors={authors} />

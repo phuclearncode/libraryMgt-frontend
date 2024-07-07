@@ -1,12 +1,20 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import "../../assets/style/HandleHoverImage.css";
 
-const ImageUpload = ({ label, name, onChange, showError }) => {
+const ImageUpload = ({ label, name, onChange, showError, defaultValue }) => {
     const [bookImagePreview, setBookImagePreview] = useState(null);
     const [hoverImage, setHoverImage] = useState(false);
 
     const bookImageInputRef = useRef(null);
+
+    useEffect(() => {
+        if (defaultValue) {
+            setBookImagePreview(typeof defaultValue === 'string' ? defaultValue : URL.createObjectURL(defaultValue));
+        }
+    }, [defaultValue]);
+
+    console.log('defaultValue:', defaultValue);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -16,20 +24,25 @@ const ImageUpload = ({ label, name, onChange, showError }) => {
                 return;
             }
 
+            if (file.size > 2 * 1024 * 1024) {
+                showError('Kích thước ảnh không được vượt quá 2MB.');
+                return;
+            }
+
 
             const reader = new FileReader();
             reader.onloadend = () => {
                 setBookImagePreview(reader.result);
 
-                console.log('name:', name, 'value:', file);
-                onChange({ target: { name, value: file } });
+                console.log('name:', name, 'files:', file);
+                onChange({ target: { name, files: file } });
             };
             reader.readAsDataURL(file);
         } else {
             setBookImagePreview(null);
 
-            console.log('name:', name, 'value:', null);
-            onChange({ target: { name, value: null } });
+            console.log('name:', name, 'files:', null);
+            onChange({ target: { name, files: null } });
         }
 
     };
@@ -37,8 +50,8 @@ const ImageUpload = ({ label, name, onChange, showError }) => {
     const handleImageRemove = () => {
         setBookImagePreview(null);
 
-        console.log('name:', name, 'value:', null);
-        onChange({ target: { name, value: null } });
+        console.log('name:', name, 'files:', null);
+        onChange({ target: { name, files: null } });
 
         const dataTransfer = new DataTransfer();
         bookImageInputRef.current.files = dataTransfer.files;

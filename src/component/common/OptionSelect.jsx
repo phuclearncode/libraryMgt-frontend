@@ -3,27 +3,50 @@ import { Select } from 'antd';
 
 const { Option, OptGroup } = Select;
 
-const OptionSelect = ({ name, onChange, data, placeholder }) => {
-  const handleChange = (selectedValue) => {
-    console.log('name:', name, 'value:', selectedValue);
-    onChange({ target: { name, value: selectedValue } });
-};
+const OptionSelect = ({ name, value, onChange, data, placeholder, mode }) => {
+  const handleChange = (selectedValues) => {
+    console.log("name: ", name, "value: ", selectedValues);
+    onChange({ target: { name, value: selectedValues } });
+  };
+
+  const optGroups = [];
+  const options = [];
+
+  data.forEach(item => {
+    if (item.parentId === 0) {
+      optGroups.push(item);
+    } else {
+      options.push(item);
+    }
+  });
+
+  // Tìm và hiển thị tên của các mục đã chọn
+  const selectedValuesWithNames = value.map(val => {
+    const selectedItem = data.find(item => item.id === val.id);
+    return selectedItem ? selectedItem.id : val;
+  });
+
+  console.log('selectedValuesWithNames:', selectedValuesWithNames);
 
   return (
     <Select
+      mode={mode}
       style={{
         width: '100%',
         marginBottom: '4px',
         fontSize: 'small'
       }}
+      value={selectedValuesWithNames}
       placeholder={placeholder}
       onChange={handleChange}
+      tokenSeparators={[',']}
+      allowClear
     >
-      {data.map(group => (
-        <OptGroup key={group.label} label={group.label} style={{fontSize: 'small'}}>
-          {group.options.map(option => (
-            <Option key={option.value} value={option.value} style={{fontSize: 'small'}}>
-              {option.label}
+      {optGroups.map(optGroup => (
+        <OptGroup key={optGroup.id} label={optGroup.name} style={{ fontSize: 'small' }}>
+          {options.filter(option => option.parentId === optGroup.id).map(option => (
+            <Option key={option.id} value={option.id} style={{ fontSize: 'small' }}>
+              {option.name}
             </Option>
           ))}
         </OptGroup>

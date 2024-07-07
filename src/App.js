@@ -7,11 +7,9 @@ import Home from "./component/client/home/Home";
 import Login from "./component/auth/Login";
 import Register from "./component/auth/Register";
 import Verify from "./component/auth/Verify";
-import ClientLayout from "./component/client/ClientLayout";
 import Search from "./component/client/search/Search";
 import MyShelf from "./component/client/myshelf/MyShelf";
 import Contribute from "./component/client/contribute/Contribute";
-import AdminLayout from "./component/admin/AdminLayout";
 import Dashboard from "./component/admin/dashboard/Dashboard";
 import User from "./component/admin/user/User";
 import AddUser from "./component/admin/user/AddUser";
@@ -26,6 +24,7 @@ import AddCategory from "./component/admin/category/AddCategory";
 import EditCategory from "./component/admin/category/EditCategory";
 import AddAuthor from "./component/admin/author/AddAuthor";
 import EditAuthor from "./component/admin/author/EditAuthor";
+import Layout from "./component/common/Layout";
 import { ProtectedRoute, AdminRoute, LibrarianRoute } from "./routes/Guard";
 
 const App = () => {
@@ -34,9 +33,10 @@ const App = () => {
       <Container fluid>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<ClientLayout />}>
+          <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="search" element={<Search />} />
+            <Route path="search/detail/:id" element={<BookDetail />} />
             <Route path="my-shelf" element={<MyShelf />} />
             <Route path="contribute" element={<Contribute />} />
           </Route>
@@ -48,17 +48,13 @@ const App = () => {
           <Route path="/resetpassword" element={<ResetPassword />} />
 
           {/* Client Protected Routes */}
-          {/* <Route path="/profile" element={<ProtectedRoute element={Profile} />} /> */}
-          {/* <Route path="/" element={<ProtectedRoute element={ClientLayout }/>} > 
-            <Route index element={<ProtectedRoute element={Home} />} />
-            <Route path="search" element={<ProtectedRoute element={Search} />} />
-            <Route path="my-shelf" element={<ProtectedRoute element={MyShelf} />} />
-            <Route path="contribute" element={<ProtectedRoute element={Contribute} />} />
+          {/* <Route path="/" element={<ProtectedRoute element={Layout} />} >
+            <Route path="search/detail/:id" element={<M element={<BookDetail />} />} />
           </Route> */}
 
 
           {/* Common Admin/Librarian Route */}
-          <Route path="/admin" element={<ProtectedRoute element={<AdminLayout />} />} >
+          <Route path="/admin" element={<ProtectedRoute element={<Layout />} />} >
             <Route index element={<Dashboard />} />
 
             {/* Admin-specific routes */}
@@ -69,18 +65,17 @@ const App = () => {
             {/* Librarian-specific routes */}
             <Route path="book" element={<LibrarianRoute element={<Book />} />} />
             <Route path="book/add" element={<LibrarianRoute element={<AddBook />} />} />
-            <Route path="book/edit/:isbn" element={<LibrarianRoute element={<EditBook />} />} />
-            {/* <Route path="book/delete/:isbn" element={<LibrarianRoute element={<EditBook />} />} /> */}
-            <Route path="book/detail/:isbn" element={<LibrarianRoute element={<BookDetail />} />} />
+            <Route path="book/edit/:id" element={<LibrarianRoute element={<EditBook />} />} />
+            <Route path="book/detail/:id" element={<LibrarianRoute element={<BookDetail />} />} />
 
-            <Route path="category" element={<LibrarianRoute element={<Category />} />} /> 
+            <Route path="category" element={<LibrarianRoute element={<Category />} />} />
             <Route path="category/add" element={<LibrarianRoute element={<AddCategory />} />} />
             <Route path="category/edit/:id" element={<LibrarianRoute element={<EditCategory />} />} />
-            
-            <Route path="author" element={<LibrarianRoute element={<Author />} />} />   
+
+            <Route path="author" element={<LibrarianRoute element={<Author />} />} />
             <Route path="author/add" element={<LibrarianRoute element={<AddAuthor />} />} />
             <Route path="author/edit/:id" element={<LibrarianRoute element={<EditAuthor />} />} />
-            
+
           </Route>
 
           {/* Redirect any unmatched route to home */}

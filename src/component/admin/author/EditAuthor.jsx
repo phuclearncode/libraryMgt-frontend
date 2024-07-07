@@ -1,62 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import useNotification from '../../../hooks/useNotification';
-import Notification from '../../common/Notification';
-import '../../../assets/style/Style.css';
-import { updateAuthor, getAuthors } from '../../../service/AuthorService'; 
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect } from "react";
+import { Form, Button, Spinner } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
+import "../../../assets/style/Style.css";
+import Notification from "../../common/Notification";
+import useNotification from "../../../hooks/useNotification";
+import { updateAuthor, getAuthorById } from "../../../service/AuthorService";
+import { useAuth } from "../../context/AuthContext";
+import TextInput from "../../common/TextInput";
+import TextArea from '../../common/TextArea';
 
 const EditAuthor = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { id } = useParams();
-  const { showError, showSuccess } = useNotification();
-  const [nameAuthor, setNameAuthor] = useState('');
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState(null); 
+  const { showError } = useNotification();
+  const [submitting, setSubmitting] = useState(false);
+
+  const [formData, setFormData] = useState({
+    userId: user.id,
+    name: "",
+    description: ""
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getAuthors(); 
-        if (response.status === 201) {
-          const authorToEdit = response.data[0].authorList.find(author => author.id === parseInt(id));
-          if (authorToEdit) {
-            setNameAuthor(authorToEdit.name); 
-            setDescription(authorToEdit.description);
-            // co the xu ly anh o day
-          } else {
-            showError("Không tìm thấy tác giả");
-           
-          }
+        const author = await getAuthorById(id);
+        if (author.status === 200) {
+          setFormData(author.data);
         } else {
-          showError("Lỗi khi tải dữ liệu tác giả");
+          showError(author.message);
         }
       } catch (error) {
-        showError("Lỗi khi tải dữ liệu tác giả");
+        console.error("Error fetching author:", error);
       }
     };
+
     fetchData();
   }, [id]);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  console.log("formData: ", formData);
+
+  const validateForm = () => {
+    const { name} = formData;
+    if (!name) {
+      return false;
+    }
+    return true;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const updatedAuthor = {
-        nameAuthor: nameAuthor,
-        description: description,
-        modifiedById: user?.id 
-        // neu co them truong image thi co the them vao day
-      };
-      await updateAuthor(id, updatedAuthor);
-      showSuccess("Cập nhật tác giả thành công");
-      navigate("/admin/author");
-    } catch (error) {
-      showError("Lỗi khi cập nhật tác giả");
+    if (!validateForm()) {
+      showError('Vui lòng điền tên tác giả');
+      return;
     }
-  };
+
+    setSubmitting(true);
+    const timer = new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+      const response = await updateAuthor(id, formData);
+      await timer;
+
+      if (response.status === 200) {
+        navigate('/admin/author', { state: { success: response.message } });
+      } else {
+        showError(response.message);
+      }
+    } catch (error) {
+      console.error("Error updating author:", error);
+      showError('Lỗi cập nhật tác giả');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
 
   return (
     <div style={{ margin: '0 200px' }}>
@@ -65,38 +92,29 @@ const EditAuthor = () => {
         <h5 >Cập nhật tác giả</h5>
       </div>
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label className="label">Tác giả</Form.Label>
-          <Form.Control
-            className="field-input"
-            type="text"
-            placeholder="Nhập tên tác giả"
-            style={{ fontSize: "small" }}
-            name="nameAuthor"
-            value={nameAuthor}
-            onChange={(e) => setNameAuthor(e.target.value)}
-          />
-          <Form.Control type="file" size="sm" />
-        </Form.Group>
+        <TextInput
+          label="Tên tác giả"
+          name="name"
+          type="text"
+          placeholder="Nhập tên tác giả"
+          value={formData.name}
+          onChange={handleChange}
+        />
 
-        <Form.Group className="mb-3">
-          <Form.Label>Mô tả</Form.Label>
-          <Form.Control 
-            as="textarea" 
-            rows={3} 
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </Form.Group>
+        <TextArea
+          label="Mô tả"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          placeholder="Nhập mô tả"
+        />
 
         <Button
-          type="submit"
-          style={{
-            fontSize: 'small',
-            backgroundColor: '#F87555',
-            border: 'none'
-          }}>
-          Lưu thay đổi
+          type='submit'
+          style={{ fontSize: 'small', backgroundColor: '#F87555', border: 'none' }}
+          disabled={submitting}
+        >
+          {submitting ? <Spinner animation="border" size="sm" /> : "Lưu thay đổi"}
         </Button>
       </Form>
 

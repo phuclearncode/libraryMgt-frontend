@@ -25,9 +25,7 @@ const NavBar = () => {
 
     <Nav defaultActiveKey="/" className="flex-column bg-white d-flex align-items-center"
       style={{
-        height: "100%",
-        borderLeft: "1px solid #DEDEE1",
-        borderRight: "1px solid #DEDEE1",
+        height: "100vh",
         boxShadow: "10px 0 10px -10px rgba(0, 0, 0, 0.1), -10px 0 10px -10px rgba(0, 0, 0, 0.1)"
       }}
 

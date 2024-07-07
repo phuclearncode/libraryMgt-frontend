@@ -7,16 +7,6 @@ import Notification from '../../common/Notification';
 
 
 const User = () => {
-  // const [show, setShow] = useState(false);
-  // const handleClose = () => setShow(false);
-  // const handleShow = () => setShow(true);
-
-  // const modalTitle = "Update User";
-
-  // const handleSave = () => {
-  //   handleClose();
-  // };
-
 
   const [users, setUsers] = useState([]);
   const { showSuccess } = useNotification();

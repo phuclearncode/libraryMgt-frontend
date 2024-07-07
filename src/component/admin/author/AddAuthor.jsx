@@ -1,39 +1,76 @@
 import React, { useState } from 'react';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Form, Button, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import useNotification from '../../../hooks/useNotification';
-import Notification from '../../common/Notification';
 import '../../../assets/style/Style.css';
+import Notification from '../../common/Notification';
+import useNotification from '../../../hooks/useNotification';
+import { addAuthor } from '../../../service/AuthorService';
 import { useAuth } from '../../context/AuthContext';
+import TextInput from '../../common/TextInput';
+import TextArea from '../../common/TextArea';
 
 const AddAuthor = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [nameAuthor, setNameAuthor] = useState('');
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState(null); 
-  const { showSuccess, showError } = useNotification();
+  const { showError, showSuccess } = useNotification();
+  const [submitting, setSubmitting] = useState(false);
+
+  const [formData, setFormData] = useState({
+    userId: user.id,
+    name: '',
+    description: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  console.log("formData: ", formData);
+
+  const validateForm = () => {
+    const { name} = formData;
+    if (!name) {
+      return false;
+    }
+    return true;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const newAuthor = {
-        nameAuthor: nameAuthor,
-        description: description,
-        modifiedById: user?.id // Assuming you have user authentication
-      };
+    if (!validateForm()) {
+      showError('Vui lòng điền tên tác giả');
+      return;
+    }
 
-      const response = await addAuthor(newAuthor); 
-      if (response && response.status === 201) { 
-        showSuccess("Thêm tác giả thành công");
-        navigate('/admin/author');
+    setSubmitting(true);
+    const timer = new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+      const response = await addAuthor(formData);
+      await timer;
+
+      if (response.status === 201) {
+        showSuccess('Tác giả đã được thêm thành công.');
+        setFormData({
+          user: user.id,
+          name: '',
+          description: ''
+        });
+
+        navigate('/admin/author', { state: { success: response.message } });
       } else {
-        showError(response?.data?.message || "Thêm tác giả thất bại"); 
+        showError(response.message);
       }
     } catch (error) {
-      showError("Lỗi thêm tác giả: " + error.message);
+      console.error("Lỗi thêm tác giả: ", error);
+      showError('Lỗi thêm tác giả');
+    } finally {
+      setSubmitting(false);
     }
-  };
+  }
 
   return (
     <div style={{ margin: '0 200px' }}>
@@ -42,29 +79,23 @@ const AddAuthor = () => {
         <h5 >Thêm tác giả</h5>
       </div>
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label className="label">Tác giả</Form.Label>
-          <Form.Control
-            className="field-input"
-            type="text"
-            placeholder="Nhập tên tác giả"
-            style={{ fontSize: "small" }}
-            name="nameAuthor"
-            value={nameAuthor}
-            onChange={(e) => setNameAuthor(e.target.value)}
-          />
-          <Form.Control type="file" size="sm" />
-        </Form.Group>
 
-        <Form.Group className="mb-3">
-          <Form.Label style={{ fontSize: 'small' }}>Mô tả</Form.Label>
-          <Form.Control 
-            as="textarea" 
-            rows={3} 
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </Form.Group>
+        <TextInput
+          label="Tên tác giả"
+          name="name"
+          type="text"
+          placeholder="Nhập tên tác giả"
+          value={formData.name}
+          onChange={handleChange}
+        />
+
+        <TextArea
+          label="Mô tả"
+          name="description"
+          placeholder="Nhập mô tả"
+          value={formData.description}
+          onChange={handleChange}
+        />
 
         <Button
           type="submit"
@@ -72,8 +103,10 @@ const AddAuthor = () => {
             fontSize: 'small',
             backgroundColor: '#F87555',
             border: 'none'
-          }}>
-          Lưu thay đổi
+          }}
+          disabled={submitting}
+        >
+          {submitting ? <Spinner animation="border" size="sm" /> : 'Lưu thay đổi'}
         </Button>
       </Form>
 
