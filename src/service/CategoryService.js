@@ -11,9 +11,7 @@ const getHeader = () => {
 
 export const getCategories = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/get-all-category`, {
-      headers: getHeader()
-    });
+    const response = await axios.get(`${BASE_URL}/get-all-category`);
     return response.data;
   } catch (error) {
     throw error;
@@ -22,9 +20,7 @@ export const getCategories = async () => {
 
 export const getParentCategories = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/get-all-parent-category`, {
-      headers: getHeader()
-    });
+    const response = await axios.get(`${BASE_URL}/get-all-parent-category`);
     return response.data;
   } catch (error) {
     throw error;
@@ -67,9 +63,7 @@ export const deleteCategory = async (id) => {
 
 export const getCategoryById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/get-category-by-id/${id}`, {
-      headers: getHeader(),
-    });
+    const response = await axios.get(`${BASE_URL}/get-category-by-id/${id}`);
     return response.data;
   } catch (error) {
     throw error;

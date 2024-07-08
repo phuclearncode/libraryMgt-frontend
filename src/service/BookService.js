@@ -86,8 +86,7 @@ export const getBooks = async (pageNo, pageSize, search, categoryId) => {
                 pageSize,
                 search: search || undefined,
                 categoryId: categoryId || undefined
-            },
-            headers: getHeader(),
+            }
         });
 
         return response.data;
@@ -98,9 +97,7 @@ export const getBooks = async (pageNo, pageSize, search, categoryId) => {
 
 export const getBookById = async (bookId) => {
     try {
-        const response = await axios.get(`${BASE_URL}/${bookId}/get-book-by-id`, {
-            headers: getHeader()
-        });
+        const response = await axios.get(`${BASE_URL}/${bookId}/get-book-by-id`);
         console.log(response);
         return response.data;
     } catch (error) {
@@ -111,8 +108,7 @@ export const getBookById = async (bookId) => {
 export const getBookImage = async (bookId) => {
     try {
         const response = await axios.get(`${BASE_URL}/${bookId}/get-book-image`, {
-            responseType: 'blob',
-            headers: getHeader()
+            responseType: 'blob'
         });
         console.log("response", response);
         return response;
@@ -124,8 +120,7 @@ export const getBookImage = async (bookId) => {
 export const getBookSampleImages = async (bookId) => {
     try {
         const response = await axios.get(`${BASE_URL}/${bookId}/get-sample-book-images`, {
-            responseType: 'blob',
-            headers: getHeader()
+            responseType: 'blob'
         });
         return response;
     } catch (error) {

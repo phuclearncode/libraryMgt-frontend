@@ -6,7 +6,7 @@ import useNotification from '../../../hooks/useNotification.js';
 import SelectSearchForm from '../../common/SelectSearchForm';
 import PaginationComponent from '../../common/PaginationComponent.jsx';
 import { getCategories } from '../../../service/CategoryService.js';
-import { getBooks, getBookImage, deleteBook } from '../../../service/BookService.js';
+import { getBooks, getBookImage } from '../../../service/BookService.js';
 import { useAuth } from '../../context/AuthContext.js';
 
 const Search = () => {
