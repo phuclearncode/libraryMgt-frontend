@@ -15,9 +15,9 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
     const [librarian, setLibrarian] = useState(isLibrarian);
     const { showError, showSuccess } = useNotification();
     const [submitting, setSubmitting] = useState(false);
-    const [selectedCopy, setSelectedCopy] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState(''); // 'edit', 'add', 'delete'
+    const [selectedCopy, setSelectedCopy] = useState(null);
 
     useEffect(() => {
         setAuthenticated(isUserAuthenticated());
@@ -25,8 +25,10 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
         setLibrarian(isLibrarian);
     }, [isUserAuthenticated, isMember, isLibrarian]);
 
+    const userId = user ? user.id : null;
+
     const [formData, setFormData] = useState({
-        userId: user.id,
+        userId: userId,
         bookId: bookId,
         barcode: '',
         status: 'AVAILABLE',
@@ -34,12 +36,16 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
 
     useEffect(() => {
         setFormData({
-            userId: user.id,
+            userId: userId,
             bookId: bookId,
             barcode: '',
             status: 'AVAILABLE',
         });
     }, [bookId]);
+
+
+    
+    
 
     const handleAdd = async () => {
         setSubmitting(true);
@@ -66,6 +72,12 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
     };
 
     const handleEdit = async () => {
+
+        if (!selectedCopy || !selectedCopy.id) {
+            console.error('Selected copy is null or has no ID');
+            return;
+        }
+
         setSubmitting(true);
         const timer = new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -91,6 +103,10 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
     };
 
     const handleDelete = async () => {
+        if (!selectedCopy || !selectedCopy.id) {
+            console.error('Selected copy is null or has no ID');
+            return;
+        }
         setSubmitting(true);
         const timer = new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -213,7 +229,7 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                                     {librarian && <td className="align-middle">{copy.updatedAt}</td>}
                                     {librarian && <td className="align-middle">{copy.updatedBy}</td>}
                                     <td className="align-middle">{copy.status}</td>
-                                    {librarian &&
+                                    {librarian && (
                                         <td className="align-middle">
                                             <Button
                                                 style={{
@@ -243,7 +259,7 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                                                 <span className="m-1">Xóa</span>
                                             </Button>
                                         </td>
-                                    }
+                                    )}
                                 </tr>
                             )
                         ))}

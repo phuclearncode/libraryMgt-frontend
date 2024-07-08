@@ -12,9 +12,7 @@ const getHeader = () => {
 
 export const getAuthors = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/get-all-author`, { 
-      headers: getHeader() 
-    });
+    const response = await axios.get(`${BASE_URL}/get-all-author`);
     return response.data;
   } catch (error) {
     throw error;
@@ -56,9 +54,7 @@ export const deleteAuthor = async (id) => {
 
 export const getAuthorById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/get-author-by-id/${id}`, {
-      headers: getHeader(),
-    });
+    const response = await axios.get(`${BASE_URL}/get-author-by-id/${id}`);
     return response.data;
   } catch (error) {
     throw error;
