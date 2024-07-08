@@ -23,7 +23,7 @@ const SelectInput = ({ label, name, value, onChange, placeholder, data }) => {
             >
                 {data && data.map(option => (
                     <option key={option.value} value={option.value} style={{fontSize: 'small'}}>
-                        {option.label}
+                        {option.name}
                     </option>
                 ))}
             </Form.Control>

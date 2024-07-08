@@ -5,7 +5,8 @@ import { Form, Button, ListGroup } from 'react-bootstrap';
 import TextArea from './TextArea';
 import { useAuth } from '../../component/context/AuthContext';
 
-const ReviewsTab = ({ reviews }) => {
+const ReviewsTab = ({ bookId, reviews, fetchBookDetail }) => {
+
     const [expanded, setExpanded] = useState(false);
     const { isMember, isLibrarian } = useAuth();
     const [member, setMember] = useState(isMember);

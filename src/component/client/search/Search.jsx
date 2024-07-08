@@ -7,6 +7,7 @@ import SelectSearchForm from '../../common/SelectSearchForm';
 import PaginationComponent from '../../common/PaginationComponent.jsx';
 import { getCategories } from '../../../service/CategoryService.js';
 import { getBooks, getBookImage, deleteBook } from '../../../service/BookService.js';
+import { useAuth } from '../../context/AuthContext.js';
 
 const Search = () => {
   const navigate = useNavigate();
@@ -19,6 +20,15 @@ const Search = () => {
   const [itemsPerPage] = useState(4);
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const { isUserAuthenticated, isMember } = useAuth();
+  const [authenticated, setAuthenticated] = useState(isUserAuthenticated());
+  const [member, setMember] = useState(isMember);
+
+  useEffect(() => {
+    setAuthenticated(isUserAuthenticated());
+    setMember(isMember);
+  }, [isUserAuthenticated, isMember]);
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -112,90 +122,96 @@ const Search = () => {
   return (
     <div>
       <Notification />
-      <div className="d-flex justify-content-between align-items-center" style={{ marginBottom: '20px' }}>
-        <h5>Sách</h5>
-        <div className='d-flex'>
-          <SelectSearchForm
-            options={categories}
-            onSelectChange={handleCategoryChange}
-            onSearchChange={handleSearchChange}
-          />
-        </div>
-      </div>
-      {books.length > 0 ? (
-        <div>
-          <Table style={{ fontSize: 'small', boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}>
-            <thead>
-              <tr>
-                <th>Tiêu đề</th>
-                <th>Đánh giá</th>
-                <th>Danh mục</th>
-                <th>Tồn kho</th>
-                <th>Trạng thái</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {books.map((book) => (
-                <tr key={book.id}>
-                  <td className="align-middle">
-                    <div className="d-flex align-items-center">
-                      {book.imageUrl ? (
-                        <Image
-                          src={book.imageUrl}
-                          alt={book.title}
-                          style={{ width: '70px', height: 'auto', marginRight: '20px' }}
-                        />
-                      ) : (
-                        <div style={{ width: '70px', height: 'auto', marginRight: '20px' }}>No Image</div>
-                      )}
-                      <div>
-                        {book.title}
-                        <div style={{ fontSize: 'x-small' }}>{renderAuthors(book.authors)}, {book.publicationYear}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="align-middle">{book.rating}/5.0</td>
-                  <td className="align-middle">
-                    {book.categories.map((category, index) => (
-                      <div key={index}>
-                        {category.name}
-                        {category.parentName && (
-                          <div style={{ fontSize: 'x-small' }}>{category.parentName}</div>
-                        )}
-                      </div>
-                    ))}
-                  </td>
-                  <td className="align-middle">{book.stock}</td>
-                  <td className="align-middle">{book.status}</td>
-                  <td className="align-middle">
-                    <Button
-                      as={Link}
-                      to={`/search/detail/${book.id}`}
-                      style={{
-                        fontSize: 'small',
-                        backgroundColor: '#fff',
-                        border: 'none',
-                        color: '#000',
-                        padding: '0'
-                      }}
-                    >
-                      <i className="bi bi-journal-bookmark"></i>
-                      <span className='m-1'>Chi tiết</span>
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-          <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
-        </div>
-      ) : (
-        <p className="mt-4">Không có sách nào được tìm thấy</p>
+      {(!authenticated || member) && (
+        <React.Fragment>
+          <div className="d-flex justify-content-between align-items-center" style={{ marginBottom: '20px' }}>
+            <div>
+              <h5>Sách</h5>
+            </div>
+            <div className='d-flex'>
+              <SelectSearchForm
+                options={categories}
+                onSelectChange={handleCategoryChange}
+                onSearchChange={handleSearchChange}
+              />
+            </div>
+          </div>
+          {books.length > 0 ? (
+            <React.Fragment>
+              <Table style={{ fontSize: 'small', boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}>
+                <thead>
+                  <tr>
+                    <th>Tiêu đề</th>
+                    <th>Đánh giá</th>
+                    <th>Danh mục</th>
+                    <th>Tồn kho</th>
+                    <th>Trạng thái</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {books.map((book) => (
+                    <tr key={book.id}>
+                      <td className="align-middle">
+                        <div className="d-flex align-items-center">
+                          {book.imageUrl ? (
+                            <Image
+                              src={book.imageUrl}
+                              alt={book.title}
+                              style={{ width: '70px', height: 'auto', marginRight: '20px' }}
+                            />
+                          ) : (
+                            <div style={{ width: '70px', height: 'auto', marginRight: '20px' }}>No Image</div>
+                          )}
+                          <div>
+                            {book.title}
+                            <div style={{ fontSize: 'x-small' }}>{renderAuthors(book.authors)}, {book.publicationYear}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="align-middle">{book.rating}/5.0</td>
+                      <td className="align-middle">
+                        {book.categories.map((category, index) => (
+                          <div key={index}>
+                            {category.name}
+                            {category.parentName && (
+                              <div style={{ fontSize: 'x-small' }}>{category.parentName}</div>
+                            )}
+                          </div>
+                        ))}
+                      </td>
+                      <td className="align-middle">{book.stock}</td>
+                      <td className="align-middle">{book.status}</td>
+                      <td className="align-middle">
+                        <Button
+                          as={Link}
+                          to={`/search/detail/${book.id}`}
+                          style={{
+                            fontSize: 'small',
+                            backgroundColor: '#fff',
+                            border: 'none',
+                            color: '#000',
+                            padding: '0'
+                          }}
+                        >
+                          <i className="bi bi-journal-bookmark"></i>
+                          <span className='m-1'>Chi tiết</span>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            </React.Fragment>
+          ) : (
+            <p className="mt-4">Không có sách nào được tìm thấy</p>
+          )}
+        </React.Fragment>
       )}
-
     </div>
   );
+
 };
 
 export default Search;

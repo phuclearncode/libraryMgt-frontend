@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { Col, Row, Card, Button } from 'react-bootstrap';
+import { useParams } from 'react-router-dom'
+import { Col, Row } from 'react-bootstrap';
 import BookCard from '../../common/BookCard';
 import BookDetailCard from '../../common/BookDetailCard';
 import BookDetailTabs from '../../common/BookDetailTabs';
@@ -14,48 +14,47 @@ const BookDetail = () => {
     const { showError } = useNotification();
 
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await getBookById(id);
-                console.log("Response: ", response);
-                if (response.status === 200) {
-                    const book = response.data;
+    const fetchBookDetail = async () => {
+        try {
+            const response = await getBookById(id);
+            if (response.status === 200) {
+                const book = response.data;
 
-                    try {
-                        const imageResponse = await getBookImage(id);
-                        if (imageResponse.status === 200) {
+                try {
+                    const imageResponse = await getBookImage(id);
+                    if (imageResponse.status === 200) {
 
-                            const contentDisposition = imageResponse.headers['content-disposition'];
-                            let fileName = 'unknown';
-                            if (contentDisposition) {
-                                const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                                if (fileNameMatch.length === 2) {
-                                    fileName = fileNameMatch[1];
-                                }
+                        const contentDisposition = imageResponse.headers['content-disposition'];
+                        let fileName = 'unknown';
+                        if (contentDisposition) {
+                            const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                            if (fileNameMatch.length === 2) {
+                                fileName = fileNameMatch[1];
                             }
-
-                            const file = new File([imageResponse.data], fileName, { type: imageResponse.data.type });
-                            const imageUrl = URL.createObjectURL(file);
-                            setBookDetail({ ...book, imageUrl });
-                        } else {
-                            showError(imageResponse.message);
-                            setBookDetail({ ...book, imageUrl: null });
                         }
-                    } catch (error) {
-                        console.error("Lỗi lấy ảnh sách:", error);
+
+                        const file = new File([imageResponse.data], fileName, { type: imageResponse.data.type });
+                        const imageUrl = URL.createObjectURL(file);
+                        setBookDetail({ ...book, imageUrl });
+                    } else {
+                        showError(imageResponse.message);
                         setBookDetail({ ...book, imageUrl: null });
                     }
-                } else {
-                    showError(response.message);
+                } catch (error) {
+                    console.error("Lỗi lấy ảnh sách:", error);
+                    setBookDetail({ ...book, imageUrl: null });
                 }
-            } catch (error) {
-                console.error("Error fetching book:", error);
-
+            } else {
+                showError(response.message);
             }
-        };
+        } catch (error) {
+            console.error("Error fetching book:", error);
 
-        fetchData();
+        }
+    };
+
+    useEffect(() => {
+        fetchBookDetail();
     }, [id]);
 
     console.log("Book Detail: ", bookDetail);
@@ -83,7 +82,7 @@ const BookDetail = () => {
 
                 <Row style={{ backgroundColor: '#fff' }}>
                     <Col>
-                        <BookDetailTabs bookDetail={bookDetail} />
+                        <BookDetailTabs bookDetail={bookDetail} fetchBookDetail={fetchBookDetail}  />
                     </Col>
                 </Row>
             </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
 
 const AuthorsTab = ({ authors }) => {
+
     const [expanded, setExpanded] = useState({});
 
     const toggleExpand = (authorId) => {
