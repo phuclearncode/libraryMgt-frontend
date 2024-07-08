@@ -4,10 +4,7 @@ import CopiesTab from './CopiesTab';
 import AuthorsTab from './AuthorsTab';
 import ReviewsTab from './ReviewsTab';
 
-const BookDetailTabs = ({ bookDetail }) => {
-    const { bookCopies, authors, reviews } = bookDetail;
-
-    console.log('BookDetailTabs:', bookDetail);
+const BookDetailTabs = ({ bookDetail, fetchBookDetail }) => {
 
     return (
         <div style={{ height: '100%' }}>
@@ -31,13 +28,13 @@ const BookDetailTabs = ({ bookDetail }) => {
                     <Col md={12} style={{ height: '100%' }}>
                         <Tab.Content style={{ height: '100%' }}>
                             <Tab.Pane eventKey="copies" style={{ height: '100%' }}>
-                                <CopiesTab bookCopies={bookCopies} />
+                                <CopiesTab bookId={bookDetail.id} bookCopies={bookDetail.bookCopies} fetchBookDetail={fetchBookDetail} />
                             </Tab.Pane>
                             <Tab.Pane eventKey="authors" style={{ height: '100%' }}>
-                                <AuthorsTab authors={authors} />
+                                <AuthorsTab authors={bookDetail.authors} fetchBookDetail={fetchBookDetail} />
                             </Tab.Pane>
                             <Tab.Pane eventKey="reviews" style={{ height: '100%' }}>
-                                <ReviewsTab reviews={reviews} />
+                                <ReviewsTab bookId={bookDetail.id} reviews={bookDetail.reviews} fetchBookDetail={fetchBookDetail} />
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>
