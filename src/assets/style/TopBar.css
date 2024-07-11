@@ -1,33 +1,31 @@
 .btnLogin {
     padding: 0 10px;
     border-radius: 50px;
-    border: 1px solid #DEDEE1;
+    border: none;
     width: 100px;
     height: 35px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #000;
+    color: #fff;
     text-decoration: none;
     font-size: small;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f87555;
 }
 
 .btnInfo {
   padding: 0 10px;
   border-radius: 50px;
-  border: 1px solid #DEDEE1;
+  border: none;
   width: 100px;
   height: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #000;
+  color: #fff;
   text-decoration: none;
   font-size: small;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #f87555;
 }
 /* CSS file */
 /* Loại bỏ hiệu ứng hover cho input và select */

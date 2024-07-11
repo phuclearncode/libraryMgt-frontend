@@ -6,7 +6,8 @@ import BookDetailCard from '../../common/BookDetailCard';
 import BookDetailTabs from '../../common/BookDetailTabs';
 import Notification from '../../common/Notification';
 import useNotification from '../../../hooks/useNotification.js';
-import { getBookById, getBookImage } from '../../../service/BookService';
+import { getBookById, getBookImage, getBookSampleImages } from '../../../service/BookService';
+import JSZip from 'jszip';
 
 const BookDetail = () => {
     const { id } = useParams();
@@ -23,35 +24,105 @@ const BookDetail = () => {
                 try {
                     const imageResponse = await getBookImage(id);
                     if (imageResponse.status === 200) {
-
                         const contentDisposition = imageResponse.headers['content-disposition'];
                         let fileName = 'unknown';
                         if (contentDisposition) {
                             const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-                            if (fileNameMatch.length === 2) {
+                            if (fileNameMatch && fileNameMatch.length === 2) {
                                 fileName = fileNameMatch[1];
                             }
                         }
 
                         const file = new File([imageResponse.data], fileName, { type: imageResponse.data.type });
                         const imageUrl = URL.createObjectURL(file);
-                        setBookDetail({ ...book, imageUrl });
+
+                        setBookDetail(prevBookDetail => ({
+                            ...prevBookDetail,
+                            ...book,
+                            imageUrl,
+                        }));
                     } else {
                         showError(imageResponse.message);
-                        setBookDetail({ ...book, imageUrl: null });
+                        setBookDetail(prevBookDetail => ({
+                            ...prevBookDetail,
+                            ...book,
+                            imageUrl: null,
+                        }));
                     }
                 } catch (error) {
                     console.error("Lỗi lấy ảnh sách:", error);
-                    setBookDetail({ ...book, imageUrl: null });
+                    setBookDetail(prevBookDetail => ({
+                        ...prevBookDetail,
+                        ...book,
+                        imageUrl: null,
+                    }));
                 }
+
+                try {
+                    const sampleImagesResponse = await getBookSampleImages(id);
+                    if (sampleImagesResponse.status === 200) {
+                        const contentDisposition = sampleImagesResponse.headers['content-disposition'];
+                        let zipFileName = 'unknown';
+                        if (contentDisposition) {
+                            const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                            if (fileNameMatch && fileNameMatch.length === 2) {
+                                zipFileName = fileNameMatch[1];
+                            }
+                        }
+
+                        const sampleImagesBlob = new File([sampleImagesResponse.data], zipFileName, { type: sampleImagesResponse.data.type });
+                        console.log("sampleImagesBlob: ", sampleImagesBlob);
+                        const zip = new JSZip();
+
+                        // Handle the zip file asynchronously
+                        zip.loadAsync(sampleImagesBlob).then(async (zip) => {
+                            const imageUrls = [];
+                            await Promise.all(Object.keys(zip.files).map(async (filename) => {
+                                const fileData = await zip.file(filename).async('blob');
+                                const imageUrl = URL.createObjectURL(fileData);
+                                imageUrls.push({ url: imageUrl, name: filename });
+                            }));
+
+                            setBookDetail(prevBookDetail => ({
+                                ...prevBookDetail,
+                                ...book,
+                                sampleBookImages: imageUrls,
+                            }));
+                        }).catch((error) => {
+                            console.error("Lỗi giải nén file zip:", error);
+                            showError("Lỗi giải nén file zip");
+                            setBookDetail(prevBookDetail => ({
+                                ...prevBookDetail,
+                                ...book,
+                                sampleBookImages: [],
+                            }));
+                        });
+                    } else {
+                        showError(sampleImagesResponse.message);
+                        setBookDetail(prevBookDetail => ({
+                            ...prevBookDetail,
+                            ...book,
+                            sampleBookImages: [],
+                        }));
+                    }
+                } catch (error) {
+                    console.error("Lỗi lấy ảnh mẫu sách:", error);
+                    setBookDetail(prevBookDetail => ({
+                        ...prevBookDetail,
+                        ...book,
+                        sampleBookImages: [],
+                    }));
+                }
+
             } else {
                 showError(response.message);
             }
         } catch (error) {
             console.error("Error fetching book:", error);
-
         }
     };
+
+
 
     useEffect(() => {
         fetchBookDetail();
@@ -70,7 +141,7 @@ const BookDetail = () => {
                     <Col md={4} style={{ display: 'flex', padding: '0' }}>
                         <BookCard
                             imageUrl={bookDetail.imageUrl}
-                            mode="buttons"
+                            mode="imageShow"
                             cardWidth="18rem"
                             cardPadding="16px"
                         />
@@ -82,7 +153,7 @@ const BookDetail = () => {
 
                 <Row style={{ backgroundColor: '#fff' }}>
                     <Col>
-                        <BookDetailTabs bookDetail={bookDetail} fetchBookDetail={fetchBookDetail}  />
+                        <BookDetailTabs bookDetail={bookDetail} fetchBookDetail={fetchBookDetail} />
                     </Col>
                 </Row>
             </div>

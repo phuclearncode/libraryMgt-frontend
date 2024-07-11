@@ -1,11 +1,46 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Form, Button, ListGroup } from 'react-bootstrap';
 
-const MultipleImageUpload = ({ label, name, onChange, showError }) => {
+const MultipleImageUpload = ({ label, name, onChange, showError, defaultValue }) => {
     const [imageFiles, setImageFiles] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
-
     const imageInputRef = useRef(null);
+
+    useEffect(() => {
+        const loadDefaultValue = async () => {
+            if (defaultValue && defaultValue.length > 0) {
+                try {
+                    const newImagePreviews = [];
+                    const newImageFiles = [];
+
+                    for (let i = 0; i < defaultValue.length; i++) {
+                        const imageUrl = defaultValue[i].url;
+                        const response = await fetch(imageUrl);
+                        const blob = await response.blob();
+                        const file = new File([blob], defaultValue[i].name, { type: "image/jpeg" });
+
+                        newImageFiles.push(file);
+
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            newImagePreviews.push({ file, preview: reader.result });
+                            if (newImagePreviews.length === defaultValue.length) {
+                                setImagePreviews((prevPreviews) => [...prevPreviews, ...newImagePreviews]);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+
+                    setImageFiles(newImageFiles);
+                } catch (error) {
+                    console.error('Error loading defaultValue:', error);
+                    showError('Error loading defaultValue');
+                }
+            }
+        };
+
+        loadDefaultValue();
+    }, [defaultValue, showError]);
 
     const handleImageChange = (e) => {
         const files = e.target.files;
@@ -38,6 +73,8 @@ const MultipleImageUpload = ({ label, name, onChange, showError }) => {
         console.log('name:', name, 'files:', [...imageFiles, ...newImageFiles]);
         onChange({ target: { name, files: [...imageFiles, ...newImageFiles] } });
     };
+    
+    
 
     const handleImageRemove = (index) => {
         const newImageFiles = [...imageFiles];
@@ -49,13 +86,16 @@ const MultipleImageUpload = ({ label, name, onChange, showError }) => {
         setImageFiles(newImageFiles);
         setImagePreviews(newImagePreviews);
 
-        console.log('name:', name, 'files:', newImageFiles);
         onChange({ target: { name, files: newImageFiles } });
 
+        // Update the input files
         const dataTransfer = new DataTransfer();
-        newImageFiles.forEach((file) => dataTransfer.items.add(file));
+        newImageFiles.forEach(file => dataTransfer.items.add(file));
         imageInputRef.current.files = dataTransfer.files;
     };
+
+    console.log('imageFiles:', imageFiles);
+    console.log('imagePreviews:', imagePreviews);
 
     return (
         <Form.Group className="mb-3">

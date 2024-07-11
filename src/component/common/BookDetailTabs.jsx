@@ -13,7 +13,7 @@ const BookDetailTabs = ({ bookDetail, fetchBookDetail }) => {
                     <Col md={12}>
                         <Nav variant="tabs" className="justify-content-center">
                             <Nav.Item>
-                                <Nav.Link eventKey="copies" style={{ fontSize: 'small', color: '#000' }}>Các bản copy</Nav.Link>
+                                <Nav.Link eventKey="copies" style={{ fontSize: 'small', color: '#000' }}>Các bản sao</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
                                 <Nav.Link eventKey="authors" style={{ fontSize: 'small', color: '#000' }}>Tác giả</Nav.Link>

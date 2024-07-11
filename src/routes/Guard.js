@@ -15,7 +15,7 @@ export const ProtectedRoute = ({ element: Component }) => {
     setAuthReady(true);
 
     if (!authenticated) {
-      navigate('/login', { replace: true, state: { from: location } });
+      navigate('/', { replace: true, state: { from: location } });
     }
   }, [authenticated, navigate, location]);
 
@@ -39,7 +39,7 @@ export const AdminRoute = ({ element: Component }) => {
     setAuthReady(true);
 
     if (!authenticated || !admin) {
-      navigate('/login', { replace: true, state: { from: location } });
+      navigate('/', { replace: true, state: { from: location } });
     }
   }, [authenticated, admin, navigate, location]);
 
@@ -63,7 +63,7 @@ export const LibrarianRoute = ({ element: Component }) => {
     setAuthReady(true);
 
     if (!authenticated || !librarian) {
-      navigate('/login', { replace: true, state: { from: location } });
+      navigate('/', { replace: true, state: { from: location } });
     }
   }, [authenticated, librarian, navigate, location]);
 

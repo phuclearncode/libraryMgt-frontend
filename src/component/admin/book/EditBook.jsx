@@ -172,35 +172,48 @@ const EditBook = () => {
   }, [id]);
 
 
-  // useEffect(() => {
-  //   const fetchBookSampleImages = async () => {
-  //     try {
-  //       const response = await getBookSampleImages(id);
-  //       console.log('Response sample image:', response);
-  //         // Đọc các file từ Blob trả về từ server
-  //         const zipBlob = new Blob([response.data]);
+  useEffect(() => {
+    const fetchBookSampleImages = async () => {
+      try {
+        const sampleImagesResponse = await getBookSampleImages(id);
+        if (sampleImagesResponse.status === 200) {
+          const contentDisposition = sampleImagesResponse.headers['content-disposition'];
+          let zipFileName = 'unknown';
+          if (contentDisposition) {
+            const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+            if (fileNameMatch && fileNameMatch.length === 2) {
+              zipFileName = fileNameMatch[1];
+            }
+          }
 
-  //         const zipReader = new JSZip();
+          const sampleImagesBlob = new File([sampleImagesResponse.data], zipFileName, { type: sampleImagesResponse.data.type });
+          const zip = new JSZip();
 
-  //         const images = [];
-  //         zipReader.forEach((relativePath, file) => {
-  //           images.push({
-  //             name: file.name,
-  //             url: URL.createObjectURL(file._data.blob)
-  //           });
-  //         });
+          zip.loadAsync(sampleImagesBlob).then(async (zip) => {
+            const imageUrls = [];
+            await Promise.all(Object.keys(zip.files).map(async (filename) => {
+              const fileData = await zip.file(filename).async('blob');
+              const imageUrl = URL.createObjectURL(fileData);
+              imageUrls.push({ url: imageUrl, name: filename });
+            }));
 
-  //         console.log('Images:', images);
+            setBookSampleImages(imageUrls);
+          }).catch((error) => {
+            console.error("Lỗi giải nén file zip:", error);
+            showError("Lỗi giải nén file zip");
+          });
+        } else {
+          showError(sampleImagesResponse.message);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy ảnh xem trước sách:", error);
+        showError("Lỗi khi lấy ảnh xem trước sách");
+      }
 
-  //         setBookSampleImages(images);
-  //     } catch (error) {
-  //       console.error('Lỗi khi lấy ảnh sách:', error);
-  //     }
-  //   };
+    };
 
-  //   fetchBookSampleImages();
-  // }, [id]);
-
+    fetchBookSampleImages();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;

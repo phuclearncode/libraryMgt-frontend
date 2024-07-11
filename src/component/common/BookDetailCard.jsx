@@ -12,7 +12,7 @@ import SelectInput from './SelectInput.jsx';
 import { useNavigate } from 'react-router-dom';
 
 const BookDetailCard = ({ bookDetail }) => {
-    const { isbn, title, authors, description, publisher, publicationYear, language, totalPage, rating } = bookDetail;
+    const { isbn, title, authors, description, publisher, publicationYear, language, totalPage, rating, sampleBookImages } = bookDetail;
 
     const [expanded, setExpanded] = useState(false);
     const [showBorrowBookModal, setShowBorrowBookModal] = useState(false);
@@ -54,21 +54,6 @@ const BookDetailCard = ({ bookDetail }) => {
     const barcodes = [
         { label: 'BC123456', value: 'BC123456' },
         { label: 'BC123457', value: 'BC123457' }
-    ];
-
-    const sampleImages = [
-        {
-            id: 1,
-            sample_book: 'https://d1b14unh5d6w7g.cloudfront.net/020161622X.01.S001.JUMBOXXX.jpg?Expires=1720412491&Signature=MQUgbf8-Uw-l5D40UawOSUDVl0Rxyg6ERePAWQFMZSCcKu0RJoc4q99frWlNxEV6Kjlx~pFCg-7HoA~ZeNY35T8woNEh~2aTsyDPzdMjQVnV3HSI-QaVV48gGs17njH5~IeEq1CWkoBr5xquDZGpRGeNm9gwtTgVKjAbBrxJx1E_&Key-Pair-Id=APKAIUO27P366FGALUMQ'
-        },
-        {
-            id: 2,
-            sample_book: 'https://d1b14unh5d6w7g.cloudfront.net/020161622X.01.S002.JUMBOXXX.jpg?Expires=1720412491&Signature=CJZLEM-Z~Hog1msRblgk6GqkR8YLRXRSof3VBBnuhkFfu6HJFyq-Hbc40-lipuVNfK0dBWM54zBFXgf~KVFaceajAA7Zyz0fmiFhPZiAu~cBvxuSi8G5FANMvGe5XLQQsrHDBXyH5itq10dxrJ6nUSxzZ2jPmVsNgsThrjJJQ0Q_&Key-Pair-Id=APKAIUO27P366FGALUMQ'
-        },
-        {
-            id: 3,
-            sample_book: 'https://d1b14unh5d6w7g.cloudfront.net/020161622X.01.S002.JUMBOXXX.jpg?Expires=1720412491&Signature=CJZLEM-Z~Hog1msRblgk6GqkR8YLRXRSof3VBBnuhkFfu6HJFyq-Hbc40-lipuVNfK0dBWM54zBFXgf~KVFaceajAA7Zyz0fmiFhPZiAu~cBvxuSi8G5FANMvGe5XLQQsrHDBXyH5itq10dxrJ6nUSxzZ2jPmVsNgsThrjJJQ0Q_&Key-Pair-Id=APKAIUO27P366FGALUMQ'
-        }
     ];
 
     const getCurrentDate = () => {
@@ -163,6 +148,7 @@ const BookDetailCard = ({ bookDetail }) => {
     };
 
     console.log("Borrow book: ", borrowBook);
+    console.log("Sample book images: ", sampleBookImages);
 
     return (
         <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
@@ -171,8 +157,8 @@ const BookDetailCard = ({ bookDetail }) => {
                 <Card.Body>
                     <Card.Title style={{ fontSize: '1.5rem', marginBottom: '10px' }}>{title}</Card.Title>
                     <Card.Text>
-                        <p style={{ fontSize: 'small' }}>{formatAuthors(authors)}</p>
-                        <p style={{ fontSize: 'small' }}>
+                        <div style={{ fontSize: 'small' }}>{formatAuthors(authors)}</div>
+                        <div style={{ fontSize: 'small', margin: '10px 0' }}>
                             <Rating
                                 initialRating={rating}
                                 readonly
@@ -181,23 +167,23 @@ const BookDetailCard = ({ bookDetail }) => {
                                 halfSymbol={<BsStarHalf style={{ color: 'gold', marginRight: '5px' }} />}
                             />
                             <span style={{ marginLeft: '5px' }}>(100)</span>
-                        </p>
-                        <p style={{ fontSize: 'small', marginBottom: '10px', textAlign: 'justify' }}>
+                        </div>
+                        <div style={{ fontSize: 'small', marginBottom: '10px', textAlign: 'justify' }}>
                             {formatDescription(description)}
                             {formatDescription(description) && (
                                 <span style={{ color: '#F87555', cursor: 'pointer', marginLeft: '5px' }} onClick={toggleExpand}>
                                     {expanded ? 'Thu gọn' : 'Xem thêm'}
                                 </span>
                             )}
-                        </p>
-                        <p style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Nhà xuất bản: </strong>{publisher}</p>
-                        <p style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Năm xuất bản: </strong>{publicationYear}</p>
-                        <p style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>ISBN: </strong>{isbn}</p>
-                        <p style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Ngôn ngữ: </strong>{language}</p>
-                        <p style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Số trang: </strong>{totalPage}</p>
+                        </div>
+                        <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Nhà xuất bản: </strong>{publisher}</div>
+                        <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Năm xuất bản: </strong>{publicationYear}</div>
+                        <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>ISBN: </strong>{isbn}</div>
+                        <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Ngôn ngữ: </strong>{language}</div>
+                        <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Số trang: </strong>{totalPage}</div>
 
                         <div className="d-flex flex-start mt-3">
-                            {member && (
+                            {(member || !authenticated) && (
                                 <Button
                                     type="submit"
                                     style={{
@@ -211,7 +197,7 @@ const BookDetailCard = ({ bookDetail }) => {
                                     Mượn sách
                                 </Button>
                             )}
-                            {(librarian || member) && (
+                            {(librarian || member || !authenticated) && (
                                 <Button
                                     type="button"
                                     style={{
@@ -284,16 +270,21 @@ const BookDetailCard = ({ bookDetail }) => {
                 size="xl"
                 hasFooter={false}
             >
-                {sampleImages.map((image, index) => (
-                    <div key={index} className="p-2" style={{ maxWidth: '100%', textAlign: 'center' }}>
-                        <img
-                            src={image.sample_book}
-                            alt={`Sample Book ${index}`}
-                            className="img-fluid mx-auto d-block"
-                            style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
-                        />
-                    </div>
-                ))}
+                {sampleBookImages && sampleBookImages.length > 0 ? (
+                    sampleBookImages.map((imageUrl, index) => (
+                        <div key={index} className="p-2" style={{ maxWidth: '100%', textAlign: 'center' }}>
+                            <img
+                                src={imageUrl.url}
+                                alt={imageUrl.name}
+                                className="img-fluid mx-auto d-block"
+                                style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
+                            />
+                        </div>
+                    ))
+                ) : (
+                    <p>Không có hình ảnh mẫu sách.</p>
+                )}
+
             </CustomModal>
 
         </div>

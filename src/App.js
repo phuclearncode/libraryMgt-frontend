@@ -16,6 +16,7 @@ import AddUser from "./component/admin/user/AddUser";
 import EditUser from "./component/admin/user/EditUser";
 import Book from "./component/admin/book/Book";
 import BookDetail from "./component/admin/book/BookDetail";
+import BookCategory from "./component/common/BookCategory";
 import Author from "./component/admin/author/Author";
 import Category from "./component/admin/category/Category";
 import AddBook from "./component/admin/book/AddBook";
@@ -36,7 +37,9 @@ const App = () => {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="search" element={<Search />} />
-            <Route path="search/detail/:id" element={<BookDetail />} />
+            <Route path="book/detail/:id" element={<BookDetail />} />
+            <Route path="book/category/:parentCategoryId" element={<BookCategory />} />
+            <Route path="book/category/:parentCategoryId/:subCategoryId" element={<BookCategory />} />
             <Route path="my-shelf" element={<MyShelf />} />
             <Route path="contribute" element={<Contribute />} />
           </Route>
