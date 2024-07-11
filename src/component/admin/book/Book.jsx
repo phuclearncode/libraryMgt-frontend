@@ -58,7 +58,7 @@ const Book = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await getBooks(currentPage, itemsPerPage, searchText, selectedCategory);
+        const response = await getBooks(currentPage, itemsPerPage, searchText, selectedCategory, null);
         if (response.status == 200) {
           const booksWithImages = await Promise.all(response.data.items.map(async (book) => {
             try {
@@ -185,7 +185,7 @@ const Book = () => {
                 <th>Người sửa đổi</th>
                 <th>Đánh giá</th>
                 <th>Danh mục</th>
-                <th>Tồn kho</th>
+                <th>Có sẵn</th>
                 <th>Trạng thái</th>
                 <th></th>
               </tr>

@@ -64,11 +64,12 @@ const Search = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await getBooks(currentPage, itemsPerPage, searchText, selectedCategory);
+        const response = await getBooks(currentPage, itemsPerPage, searchText, selectedCategory, 'ACTIVE');
+        console.log("Response: ", response);
         if (response.status == 200) {
           const booksWithImages = await Promise.all(response.data.items.map(async (book) => {
             try {
-              const imageResponse = await getBookImage(book.id); // Hàm API lấy ảnh sách
+              const imageResponse = await getBookImage(book.id);
               if (imageResponse.status === 200) {
 
                 const contentDisposition = imageResponse.headers['content-disposition'];
@@ -105,6 +106,8 @@ const Search = () => {
     fetchBooks();
   }, [currentPage, itemsPerPage, searchText, selectedCategory]);
 
+  console.log("SelectedCategory: ", selectedCategory);
+
   useEffect(() => {
     if (location.state && location.state.success) {
       showSuccess(location.state.success);
@@ -126,7 +129,7 @@ const Search = () => {
         <React.Fragment>
           <div className="d-flex justify-content-between align-items-center" style={{ marginBottom: '20px' }}>
             <div>
-              <h5>Sách</h5>
+              <h5>Tìm kiếm sách</h5>
             </div>
             <div className='d-flex'>
               <SelectSearchForm
@@ -144,8 +147,7 @@ const Search = () => {
                     <th>Tiêu đề</th>
                     <th>Đánh giá</th>
                     <th>Danh mục</th>
-                    <th>Tồn kho</th>
-                    <th>Trạng thái</th>
+                    <th>Có sẵn</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -181,11 +183,10 @@ const Search = () => {
                         ))}
                       </td>
                       <td className="align-middle">{book.stock}</td>
-                      <td className="align-middle">{book.status}</td>
                       <td className="align-middle">
                         <Button
                           as={Link}
-                          to={`/search/detail/${book.id}`}
+                          to={`/book/detail/${book.id}`}
                           style={{
                             fontSize: 'small',
                             backgroundColor: '#fff',

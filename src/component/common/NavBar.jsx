@@ -3,7 +3,6 @@ import { Nav } from 'react-bootstrap';
 import Logo from '../../assets/image/logo.png';
 import { useAuth } from '../context/AuthContext.js';
 import { Link } from 'react-router-dom';
-import { GiBookshelf } from "react-icons/gi";
 
 
 const NavBar = () => {
@@ -52,10 +51,14 @@ const NavBar = () => {
                 <span className='mx-2'>Tìm kiếm</span>
               </Nav.Link>
             </Nav.Item>
+          </>
+        )}
 
+        {member && (
+          <>
             <Nav.Item>
               <Nav.Link as={Link} to="/my-shelf" className="nav-link" style={{ color: '#8A8A8A', fontSize: 'small' }}>
-                <GiBookshelf />
+                <i className="bi bi-menu-button-wide"></i>
                 <span className='mx-2'>Sách của tôi</span>
               </Nav.Link>
             </Nav.Item>
@@ -73,7 +76,7 @@ const NavBar = () => {
         {librarian &&
           <Nav.Item>
             <Nav.Link as={Link} to="/admin" style={{ color: '#8A8A8A', fontSize: 'small' }}>
-            <i className="bi bi-columns-gap"></i>
+              <i className="bi bi-columns-gap"></i>
               <span className='mx-1'>Bảng điều khiển</span>
             </Nav.Link>
           </Nav.Item>
@@ -88,7 +91,7 @@ const NavBar = () => {
           </Nav.Item>
         }
 
-        {librarian && 
+        {librarian &&
           <Nav.Item>
             <Nav.Link as={Link} to="/admin/book" style={{ color: '#8A8A8A', fontSize: 'small' }}>
               <i className="bi bi-book"></i>
@@ -96,7 +99,7 @@ const NavBar = () => {
             </Nav.Link>
           </Nav.Item>
         }
-        
+
         {librarian && (
           <Nav.Item>
             <Nav.Link

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from 'react-bootstrap';
-import IconButton from './IconButton';
+import { Link } from 'react-router-dom';
 
-const BookCard = ({ imageUrl, mode, title, authors, publishedYear, rating, cardWidth, cardPadding }) => {
+const BookCard = ({ bookId, imageUrl, mode, title, authors, publicationYear, rating, cardWidth, cardPadding }) => {
+
     const truncateValue = (value, maxLength) => {
         if (value.length > maxLength) {
             return value.substring(0, maxLength) + '...';
@@ -10,12 +11,17 @@ const BookCard = ({ imageUrl, mode, title, authors, publishedYear, rating, cardW
         return value;
     };
 
-    const formatAuthorsAndYear = (authors, publishedYear) => {
-        const authorString = authors.join(', ');
-        return `${authorString}, ${publishedYear}`;
+    const formatAuthorsAndYear = (authors, publicationYear) => {
+        if (!authors) return '';
+
+        const authorNames = authors.map(author => author.name);
+        const authorString = authorNames.join(', ');
+        return `${authorString}, ${publicationYear}`;
     };
 
-    return (
+    
+
+    const cardContent = (
         <div
             className="d-flex justify-content-center align-items-center"
             style={{
@@ -32,24 +38,41 @@ const BookCard = ({ imageUrl, mode, title, authors, publishedYear, rating, cardW
                     borderRadius: 'none'
                 }}
             >
-                <Card.Img
-                    variant="top"
-                    src={imageUrl}
-                    style={{ borderRadius: '5px' }}
-                />
-
-                {mode === 'info' && (
-                    <Card.Body className="text-left" style={{padding: '10px 0 0 0'}}>
-                    <Card.Text className="text-left">
-                        <p style={{ fontSize: 'small', margin: '0' }}>{truncateValue(title, 20)}</p>
-                        <p style={{ fontSize: 'x-small', margin: '0' }}>{truncateValue(formatAuthorsAndYear(authors, publishedYear), 25)}</p>
-                        <p style={{ fontSize: 'x-small', margin: '0' }}>{rating}/5</p>
-                    </Card.Text>
-                </Card.Body>
+                {mode === 'imageShow' && (
+                    <Card.Img
+                        variant="top"
+                        src={imageUrl}
+                        style={{
+                            borderRadius: '5px'
+                        }}
+                    />
                 )}
 
+                {mode === 'info' && (
+                    <>
+                        <Card.Img
+                            src={imageUrl}
+                            style={{
+                                borderRadius: '5px',
+                                height: '8rem',
+                                objectFit: 'contain'
+                            }}
+                        />
+                        <Card.Body className="text-left" style={{ padding: '10px 0 0 0' }}>
+                            <Card.Text className="text-left">
+                                <div style={{ fontSize: 'small', margin: '0' }}>{truncateValue(title, 15)}</div>
+                                <div style={{ fontSize: 'x-small', margin: '0' }}>{truncateValue(formatAuthorsAndYear(authors, publicationYear), 20)}</div>
+                                <div style={{ fontSize: 'x-small', margin: '0' }}>{rating}/5</div>
+                            </Card.Text>
+                        </Card.Body>
+                    </>
+                )}
             </Card>
         </div>
+    );
+
+    return (
+        mode === 'info' ? <Link to={`/book/detail/${bookId}`} style={{ textDecoration: 'none', color: 'inherit' }}>{cardContent}</Link> : cardContent
     );
 };
 
