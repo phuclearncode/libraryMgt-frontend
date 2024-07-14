@@ -73,7 +73,6 @@ const Login = () => {
         console.log("isLibrarian", isLibrarian());
         console.log("isMember", isMember());
 
-
         if (isAdmin() || isLibrarian()) {
           navigate("/admin");
         } else if (isMember()) {

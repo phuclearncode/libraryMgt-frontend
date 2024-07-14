@@ -27,6 +27,8 @@ import AddAuthor from "./component/admin/author/AddAuthor";
 import EditAuthor from "./component/admin/author/EditAuthor";
 import Layout from "./component/common/Layout";
 import { ProtectedRoute, AdminRoute, LibrarianRoute } from "./routes/Guard";
+import RentComponent from "./component/admin/rent/RentComponent";
+import ReturnComponent from "./component/admin/rent/ReturnComponent";
 
 const App = () => {
   return (
@@ -70,6 +72,7 @@ const App = () => {
             <Route path="book/add" element={<LibrarianRoute element={<AddBook />} />} />
             <Route path="book/edit/:id" element={<LibrarianRoute element={<EditBook />} />} />
             <Route path="book/detail/:id" element={<LibrarianRoute element={<BookDetail />} />} />
+            <Route path="book/return/" element={<LibrarianRoute element={<ReturnComponent />} />} />
 
             <Route path="category" element={<LibrarianRoute element={<Category />} />} />
             <Route path="category/add" element={<LibrarianRoute element={<AddCategory />} />} />
@@ -78,6 +81,8 @@ const App = () => {
             <Route path="author" element={<LibrarianRoute element={<Author />} />} />
             <Route path="author/add" element={<LibrarianRoute element={<AddAuthor />} />} />
             <Route path="author/edit/:id" element={<LibrarianRoute element={<EditAuthor />} />} />
+
+            <Route path="rent" element={<LibrarianRoute element={<RentComponent />} />} />
 
           </Route>
 
