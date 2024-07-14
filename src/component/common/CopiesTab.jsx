@@ -7,6 +7,7 @@ import { useAuth } from '../../component/context/AuthContext';
 import { addBookCopy, updateBookCopy, deleteBookCopy } from '../../service/BookCopyService';
 import Notification from '../../component/common/Notification.jsx';
 import useNotification from '../../hooks/useNotification.js';
+import { rejectLoan, returningLoan } from '../../service/RentService.js';
 
 const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
     const { isUserAuthenticated, isMember, isLibrarian, user } = useAuth();
@@ -44,8 +45,8 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
     }, [bookId]);
 
 
-    
-    
+
+
 
     const handleAdd = async () => {
         setSubmitting(true);
@@ -130,6 +131,28 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
         }
     };
 
+    const handleReturn = async () => {
+        if (!selectedCopy || !selectedCopy.id) {
+            console.error('Selected copy is null or has no ID');
+            return;
+        }
+        // setSubmitting(true);
+        console.log('hehe', selectedCopy);
+        const body = {
+            loanId: selectedCopy?.loanInfo[selectedCopy?.loanInfo.length - 1]?.loanId,
+            bookCopyId: selectedCopy?.id,
+            note: ''
+        }
+        await returningLoan(body).then(resp => {
+            if (resp?.code === 200) {
+                fetchBookDetail();
+                setSubmitting(false);
+                handleCloseModal();
+            }
+        }).catch(err => showError('Lỗi khi trả sách'))
+    }
+
+
     const handleAction = async () => {
         switch (modalType) {
             case 'add':
@@ -140,6 +163,9 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                 break;
             case 'delete':
                 await handleDelete();
+                break;
+            case 'return':
+                await handleReturn();
                 break;
             default:
                 break;
@@ -177,7 +203,7 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
             status: 'AVAILABLE',
         });
     };
-
+    // console.log(bookCopies);
     const statusOptions = [
         { name: 'Có sẵn', value: 'AVAILABLE' },
         { name: 'Đang được mượn', value: 'BORROWED' },
@@ -217,6 +243,7 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                             {librarian && <th>Thời gian sửa đổi</th>}
                             {librarian && <th>Người sửa đổi</th>}
                             <th>Trạng thái</th>
+                            {member && <><th>Lí do</th><th></th></>}
                             <th></th>
                         </tr>
                     </thead>
@@ -229,6 +256,22 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                                     {librarian && <td className="align-middle">{copy.updatedAt}</td>}
                                     {librarian && <td className="align-middle">{copy.updatedBy}</td>}
                                     <td className="align-middle">{copy.status}</td>
+                                    {copy?.status == 'REJECT' && <td className="align-middle">{copy?.loanInfo[copy?.loanInfo?.length - 1]?.note}</td>}
+                                    {copy?.status == 'ACTIVE' && <><td></td><td className="align-middle">
+                                        <Button
+                                            style={{
+                                                fontSize: 'small',
+                                                backgroundColor: '#fff',
+                                                border: 'none',
+                                                color: '#000',
+                                                padding: '0',
+                                            }}
+                                            onClick={() => handleShowModal('return', copy)}
+                                        >
+                                            <i class="bi bi-arrow-return-left"></i>
+                                            <span className="m-1">Trả sách</span>
+                                        </Button>
+                                    </td></>}
                                     {librarian && (
                                         <td className="align-middle">
                                             <Button
@@ -273,12 +316,12 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
             <CustomModal
                 show={showModal}
                 handleClose={handleCloseModal}
-                title={modalType === 'add' ? 'Thêm mới' : modalType === 'edit' ? 'Cập nhật' : 'Xác nhận'}
+                title={modalType === 'add' ? 'Thêm mới' : modalType === 'edit' ? 'Cập nhật' : modalType === 'return' ? 'Trả sách' : 'Xác nhận'}
                 handleSave={handleAction}
                 submitting={submitting}
                 hasFooter={true}
             >
-                {modalType !== 'delete' && (
+                {(modalType !== 'delete' && modalType !== 'return') && (
                     <>
                         <TextInput
                             label="Barcode"
@@ -298,7 +341,8 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                         />
                     </>
                 )}
-                {modalType === 'delete' && <p>Bạn có chắc chắn muốn xóa bản copy này?</p>}
+                {modalType === 'delete' && modalType !== 'return' && <p>Bạn có chắc chắn muốn xóa bản copy này?</p>}
+                {modalType === 'return' && <p>Bạn có chắc là muốn trả sách</p>}
             </CustomModal>
         </div>
     );

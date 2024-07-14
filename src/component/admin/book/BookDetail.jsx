@@ -6,7 +6,7 @@ import BookDetailCard from '../../common/BookDetailCard';
 import BookDetailTabs from '../../common/BookDetailTabs';
 import Notification from '../../common/Notification';
 import useNotification from '../../../hooks/useNotification.js';
-import { getBookById, getBookImage, getBookSampleImages } from '../../../service/BookService';
+import { getBookById, getBookByIdAuth, getBookImage, getBookSampleImages } from '../../../service/BookService';
 import JSZip from 'jszip';
 
 const BookDetail = () => {
@@ -17,7 +17,9 @@ const BookDetail = () => {
 
     const fetchBookDetail = async () => {
         try {
-            const response = await getBookById(id);
+            const tmp = localStorage.getItem('access_token');
+            console.log('tmp', tmp);
+            const response =  tmp ? await getBookByIdAuth(id) : await getBookById(id);
             if (response.status === 200) {
                 const book = response.data;
 
@@ -126,7 +128,7 @@ const BookDetail = () => {
 
     useEffect(() => {
         fetchBookDetail();
-    }, [id]);
+    }, [id, localStorage.getItem('access_token')]);
 
     console.log("Book Detail: ", bookDetail);
 

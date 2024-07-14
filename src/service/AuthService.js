@@ -1,7 +1,13 @@
 import axios from "axios";
 
 const BASE_URL = "http://localhost:8080/api/v1/auth";
-
+const getHeader = () => {
+    const token = localStorage.getItem("access_token");
+    return {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    };
+  };
 export const login = async (loginData) => {
     try {
         const response = await axios.post(`${BASE_URL}/authenticate`, loginData);
@@ -56,6 +62,15 @@ export const forgotPassword = async (email) => {
         throw error;
     }
 }
+
+export const getWhoami = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/whoami`, { headers: getHeader() });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
 
 export const resetPassword = async (otp, email, newPassword) => {
     try {

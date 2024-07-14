@@ -106,6 +106,16 @@ export const getBookById = async (bookId) => {
     }
 };
 
+export const getBookByIdAuth = async (bookId) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/get-book-by-id-auth?bookId=${bookId}`, {headers: getHeader()});
+        console.log(response);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const getBookImage = async (bookId) => {
     try {
         const response = await axios.get(`${BASE_URL}/${bookId}/get-book-image`, {
