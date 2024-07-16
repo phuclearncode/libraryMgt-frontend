@@ -33,7 +33,19 @@ export const addReview = async (reviewData) => {
 
 export const deleteReview = async (reviewId) => {
     try {
-        const response = await axios.delete(`${BASE_URL}/${reviewId}/delete-review`, {
+        const response = await axios.delete(`${BASE_URL}/delete-review/${reviewId}`, {
+            headers: getHeader()
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+
+};
+
+export const updateReview = async (reviewId, reviewData) => {
+    try {
+        const response = await axios.put(`${BASE_URL}/update-review/${reviewId}`, reviewData, {
             headers: getHeader()
         });
         return response.data;

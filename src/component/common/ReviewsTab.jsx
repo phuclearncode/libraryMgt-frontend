@@ -4,13 +4,13 @@ import Rating from 'react-rating';
 import { Form, Button, ListGroup, Dropdown } from 'react-bootstrap';
 import TextArea from './TextArea';
 import { useAuth } from '../../component/context/AuthContext';
-import { addReview } from '../../service/ReviewService';
+import { addReview, updateReview, deleteReview } from '../../service/ReviewService';
 
 const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
     const [editingReviewId, setEditingReviewId] = useState(null);
     const [expanded, setExpanded] = useState(false);
-
-    const { isLibrarian } = useAuth();
+    
+    const { isLibrarian, user } = useAuth();
 
     const [librarian, setLibrarian] = useState(isLibrarian);
 
@@ -22,12 +22,19 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
         rating: 0,
         feedback: ''
     });
+    const [formEditData, setFormEditData] = useState({
+        rating: 0,
+        feedback: ''
+    });
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
     };
-
+    const handleEditChange = (event) => {
+        const { name, value } = event.target;
+        setFormEditData({ ...formEditData, [name]: value });
+    };
     const handleSubmit = async(event) => {
         // Adjust if user add review
         event.preventDefault();
@@ -36,21 +43,40 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
                 ...formData,
                 bookId: bookId , 
                 userId: user.id,
-                // created_at: new Date().toISOString(),
+            
             };
             console.log(newReview);
             const addedReview = await addReview(newReview);
             
             setFormData({ feedback: '', rating: 0 });
-            fetchBookDetail(); // Fetch updated book details
+            fetchBookDetail(); 
         } catch (error) {
             console.error("Error adding review:", error);
-            // Handle error in UI (display error message, etc.)
+            
         }
         console.log(formData);
         setEditingReviewId(null);
     };
 
+        const handleEditSubmit = async(event) => {
+        event.preventDefault();
+        try {
+            const updatedReview = {
+                ...formEditData,
+                bookId: bookId,
+                userId: user.id,
+            };
+            console.log(updatedReview);
+            const addedReview = await updateReview(editingReviewId,updatedReview);
+            setFormData({ feedback: '', rating: 0 });
+            fetchBookDetail(); 
+        } catch (error) {
+            console.error("Error adding review:", error);
+            
+        }
+        console.log(formEditData);
+        setEditingReviewId(null);
+    }
     const toggleExpand = (authorId) => {
         setExpanded(prevState => ({
             ...prevState,
@@ -72,22 +98,29 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
     );
 
     const handleEdit = (reviewId) => {
+        
         setEditingReviewId(reviewId);
 
         const reviewToEdit = reviews.find(review => review.id === reviewId);
-        setFormData({
+        setFormEditData({
             rating: reviewToEdit.rating,
             feedback: reviewToEdit.feedback
         });
     };
 
     const handleCancel = () => {
+
         setEditingReviewId(null);
     };
 
-    const handleDelete = (reviewId) => {
-        console.log(`Xóa đánh giá có id ${reviewId}`);
-    };
+    const handleDelete = async (reviewId) => {
+        try {
+          await deleteReview(reviewId);
+          fetchBookDetail();
+        } catch (error) {
+          console.error("Error deleting review:", error);
+        }
+      };
 
     return (
         <div style={{ margin: '20px 0' }}>
@@ -140,8 +173,8 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
                                         <span style={{ marginRight: '10px', fontSize: 'small', fontWeight: 'bold' }}>{review.memberName}</span>
                                         {editingReviewId === review.id ? (
                                             <Rating
-                                                initialRating={formData.rating}
-                                                onChange={(value) => setFormData({ ...formData, rating: value })}
+                                                initialRating={formEditData.rating}
+                                                onChange={(value) => setFormEditData({ ...formEditData, rating: value })}
                                                 fullSymbol={<BsStarFill style={{ color: 'gold', marginRight: '5px' }} />}
                                                 emptySymbol={<BsStar style={{ color: 'lightgray', marginRight: '5px' }} />}
                                                 halfSymbol={<BsStarHalf style={{ color: 'gold', marginRight: '5px' }} />}
@@ -173,7 +206,7 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
                                                     Hủy
                                                 </Button>
                                                 <Button
-                                                    onClick={handleSubmit}
+                                                    onClick={handleEditSubmit}
                                                     style={{
                                                         fontSize: 'small',
                                                         backgroundColor: '#F87555',
@@ -196,8 +229,8 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
                                 {editingReviewId === review.id ? (
                                     <TextArea
                                         name="feedback"
-                                        value={formData.feedback}
-                                        onChange={handleChange}
+                                        value={formEditData.feedback}
+                                        onChange={handleEditChange}
                                         placeholder="Viết feedback của bạn..."
                                         rows={6}
                                     />
