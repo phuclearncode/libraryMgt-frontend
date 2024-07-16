@@ -99,23 +99,23 @@ const Verify = () => {
             <>
               <h6>Xác thực OTP</h6>
               <div className="sub-title">
-                Bạn chưa nhận được mã? 
-                  <Link
-                    to="/verify"
-                    onClick={handleResendOtp}
-                    disabled={resendLoading}
-                    style={{ cursor: resendLoading ? "not-allowed" : "pointer"}}
-                  >
-                    {resendLoading ? "Đang gửi..." : "Gửi lại mã"}
-                  </Link>
+                Bạn chưa nhận được mã?
+                <Link
+                  to="/verify"
+                  onClick={handleResendOtp}
+                  disabled={resendLoading}
+                  style={{ cursor: resendLoading ? "not-allowed" : "pointer" }}
+                >
+                  {resendLoading ? "Đang gửi..." : "Gửi lại mã"}
+                </Link>
               </div>
             </>
           )}
         </div>
         {!verified ? (
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-1">
-              
+            <Form.Group className="mb-2">
+
               <div className="input-container">
                 {otp.map((digit, index) => (
                   <Form.Control
@@ -131,8 +131,21 @@ const Verify = () => {
                 ))}
               </div>
             </Form.Group>
-            <Form.Group className="mb-1 d-flex">
-              <Link to="/register" className="btn-back">Quay lại</Link>
+            <Form.Group className="d-flex" style={{marginTop: '150px'}}>
+              <Button
+                as={Link}
+                to="/register"
+                className="btn-back"
+                style={{
+                  backgroundColor: 'transparent',
+                  border: '1px solid #ABABAB',
+                  color: '#ABABAB',
+                  fontSize: 'small',
+                  marginRight: '10px'
+                }}
+              >
+                Quay lại
+              </Button>
               <Button
                 className="btn-verify"
                 type="submit"
@@ -148,8 +161,7 @@ const Verify = () => {
             </Form.Group>
           </Form>
         ) : (
-          // Nếu đã được xác minh, hiển thị thông báo đã xác minh thành công
-          <div className="verify-success">
+          <div className="verify-success" style={{marginTop: '150px'}}>
             <svg
               fill="none"
               height="24"

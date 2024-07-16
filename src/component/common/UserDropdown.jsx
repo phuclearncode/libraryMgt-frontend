@@ -1,19 +1,21 @@
 import React from 'react';
 import { Dropdown, Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const UserDropdown = () => {
   const { isUserAuthenticated, logout, user } = useAuth();
   const authenticated = isUserAuthenticated();
   const getFullName = user ? user.fullName : '';
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     const isLogout = window.confirm(
-      "Are you sure you want to logout this user?"
+      "Bạn có chắc đăng xuất tài khoản người dùng này không?"
     );
     if (isLogout) {
       logout();
+      navigate("/");
     }
   };
 
