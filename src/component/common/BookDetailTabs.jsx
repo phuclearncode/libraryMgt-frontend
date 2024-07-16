@@ -34,7 +34,7 @@ const BookDetailTabs = ({ bookDetail, fetchBookDetail }) => {
                                 <AuthorsTab authors={bookDetail.authors} fetchBookDetail={fetchBookDetail} />
                             </Tab.Pane>
                             <Tab.Pane eventKey="reviews" style={{ height: '100%' }}>
-                                <ReviewsTab bookId={bookDetail.id} reviews={bookDetail.reviews} fetchBookDetail={fetchBookDetail} />
+                                <ReviewsTab bookId={bookDetail.id} reviews={bookDetail.reviews} fetchBookDetail={fetchBookDetail} totalReviews={bookDetail.totalReviews} />
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>

@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { BsStarFill, BsStarHalf, BsStar } from 'react-icons/bs';
 import Rating from 'react-rating';
-import { Form, Button, ListGroup } from 'react-bootstrap';
+import { Form, Button, ListGroup, Dropdown } from 'react-bootstrap';
 import TextArea from './TextArea';
 import { useAuth } from '../../component/context/AuthContext';
 
-const ReviewsTab = ({ bookId, reviews, fetchBookDetail }) => {
-
+const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
+    const [editingReviewId, setEditingReviewId] = useState(null);
     const [expanded, setExpanded] = useState(false);
-    const { isMember, isLibrarian } = useAuth();
-    const [member, setMember] = useState(isMember);
+    const { isLibrarian } = useAuth();
     const [librarian, setLibrarian] = useState(isLibrarian);
 
     useEffect(() => {
-        setMember(isMember);
         setLibrarian(isLibrarian);
-    }, [isMember, isLibrarian]);
+    }, [isLibrarian]);
 
     const [formData, setFormData] = useState({
         rating: 0,
@@ -31,6 +29,7 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail }) => {
         event.preventDefault();
 
         console.log(formData);
+        setEditingReviewId(null);
     };
 
     const toggleExpand = (authorId) => {
@@ -40,6 +39,36 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail }) => {
         }));
     }
 
+    const renderDropdown = (reviewId) => (
+        <Dropdown>
+            <Dropdown.Toggle variant="link" id={`dropdown-${reviewId}`} style={{ fontSize: 'small', color: '#000' }}>
+                <i className="bi bi-three-dots"></i>
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleEdit(reviewId)}>Sửa</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleDelete(reviewId)}>Xóa</Dropdown.Item>
+            </Dropdown.Menu>
+        </Dropdown>
+    );
+
+    const handleEdit = (reviewId) => {
+        setEditingReviewId(reviewId);
+
+        const reviewToEdit = reviews.find(review => review.id === reviewId);
+        setFormData({
+            rating: reviewToEdit.rating,
+            feedback: reviewToEdit.feedback
+        });
+    };
+
+    const handleCancel = () => {
+        setEditingReviewId(null);
+    };
+
+    const handleDelete = (reviewId) => {
+        console.log(`Xóa đánh giá có id ${reviewId}`);
+    };
 
     return (
         <div style={{ margin: '20px 0' }}>
@@ -81,7 +110,7 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail }) => {
             )}
 
 
-            <h6 style={{ margin: '20px 0' }}>Đánh giá (20)</h6>
+            <h6 style={{ margin: '20px 0' }}>Đánh giá ({totalReviews})</h6>
             {reviews && reviews.length > 0 ? (
                 <ListGroup>
                     {reviews.map((review) => (
@@ -89,27 +118,80 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail }) => {
                             <div style={{ marginBottom: '10px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <div>
-                                        <span style={{ marginRight: '10px', fontSize: 'small', fontWeight: 'bold' }}>{review.reviewer}</span>
-                                        <Rating
-                                            initialRating={review.rating}
-                                            readonly
-                                            fullSymbol={<BsStarFill style={{ color: 'gold', marginRight: '3px' }} />}
-                                            emptySymbol={<BsStar style={{ color: 'lightgray', marginRight: '3px' }} />}
-                                            halfSymbol={<BsStarHalf style={{ color: 'gold', marginRight: '3px' }} />}
-                                        />
+                                        <span style={{ marginRight: '10px', fontSize: 'small', fontWeight: 'bold' }}>{review.memberName}</span>
+                                        {editingReviewId === review.id ? (
+                                            <Rating
+                                                initialRating={formData.rating}
+                                                onChange={(value) => setFormData({ ...formData, rating: value })}
+                                                fullSymbol={<BsStarFill style={{ color: 'gold', marginRight: '5px' }} />}
+                                                emptySymbol={<BsStar style={{ color: 'lightgray', marginRight: '5px' }} />}
+                                                halfSymbol={<BsStarHalf style={{ color: 'gold', marginRight: '5px' }} />}
+                                            />
+                                        ) : (
+                                            <Rating
+                                                initialRating={review.rating}
+                                                readonly
+                                                fullSymbol={<BsStarFill style={{ color: 'gold', marginRight: '3px' }} />}
+                                                emptySymbol={<BsStar style={{ color: 'lightgray', marginRight: '3px' }} />}
+                                                halfSymbol={<BsStarHalf style={{ color: 'gold', marginRight: '3px' }} />}
+                                            />
+                                        )}
                                     </div>
-                                    <div style={{ fontSize: 'small' }}>{review.created_at}</div>
+                                    <div style={{ fontSize: 'small', display: 'flex', alignItems: 'center' }}>
+                                        <span style={{ marginLeft: '10px' }}>{review.updatedAt}</span>
+                                        {editingReviewId === review.id ? (
+                                            <div>
+                                                <Button
+                                                    onClick={handleCancel}
+                                                    style={{
+                                                        fontSize: 'small',
+                                                        backgroundColor: 'transparent',
+                                                        border: '1px solid #ABABAB',
+                                                        marginLeft: '10px',
+                                                        color: '#ABABAB'
+                                                    }}
+                                                >
+                                                    Hủy
+                                                </Button>
+                                                <Button
+                                                    onClick={handleSubmit}
+                                                    style={{
+                                                        fontSize: 'small',
+                                                        backgroundColor: '#F87555',
+                                                        border: 'none',
+                                                        marginLeft: '10px'
+                                                    }}
+                                                >
+                                                    Lưu
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            renderDropdown(review.id)
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <p style={{ textAlign: 'justify', fontSize: 'small' }}>
 
-                                {expanded[review.id] ? review.feedback : `${review.feedback.slice(0, 200)}...`}
-                                {review.feedback.length > 200 && (
-                                    <span
-                                        style={{ color: '#F87555', cursor: 'pointer', marginLeft: '5px' }}
-                                        onClick={() => toggleExpand(review.id)}
-                                    >
-                                        {expanded[review.id] ? 'Thu gọn' : 'Xem thêm'}
+                                {editingReviewId === review.id ? (
+                                    <TextArea
+                                        name="feedback"
+                                        value={formData.feedback}
+                                        onChange={handleChange}
+                                        placeholder="Viết feedback của bạn..."
+                                        rows={6}
+                                    />
+                                ) : (
+                                    <span>
+                                        {review.feedback.length > 200 ? `${review.feedback.slice(0, 200)}...` : review.feedback}
+                                        {review.feedback.length > 200 && (
+                                            <span
+                                                style={{ color: '#F87555', cursor: 'pointer', marginLeft: '5px' }}
+                                                onClick={() => toggleExpand(review.id)}
+                                            >
+                                                {expanded[review.id] ? 'Thu gọn' : 'Xem thêm'}
+                                            </span>
+                                        )}
                                     </span>
                                 )}
                             </p>
