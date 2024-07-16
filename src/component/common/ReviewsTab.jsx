@@ -4,11 +4,12 @@ import Rating from 'react-rating';
 import { Form, Button, ListGroup } from 'react-bootstrap';
 import TextArea from './TextArea';
 import { useAuth } from '../../component/context/AuthContext';
+import { addReview } from '../../service/ReviewService';
 
 const ReviewsTab = ({ bookId, reviews, fetchBookDetail }) => {
 
     const [expanded, setExpanded] = useState(false);
-    const { isMember, isLibrarian } = useAuth();
+    const { isMember, isLibrarian, user } = useAuth();
     const [member, setMember] = useState(isMember);
     const [librarian, setLibrarian] = useState(isLibrarian);
 
@@ -27,9 +28,25 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail }) => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
+        // Adjust if user add review
         event.preventDefault();
-
+        try {
+            const newReview = {
+                ...formData,
+                bookId: bookId , 
+                userId: user.id,
+                // created_at: new Date().toISOString(),
+            };
+            console.log(newReview);
+            const addedReview = await addReview(newReview);
+            
+            setFormData({ feedback: '', rating: 0 });
+            fetchBookDetail(); // Fetch updated book details
+        } catch (error) {
+            console.error("Error adding review:", error);
+            // Handle error in UI (display error message, etc.)
+        }
         console.log(formData);
     };
 
@@ -104,6 +121,7 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail }) => {
                             <p style={{ textAlign: 'justify', fontSize: 'small' }}>
 
                                 {expanded[review.id] ? review.feedback : `${review.feedback.slice(0, 200)}...`}
+                              
                                 {review.feedback.length > 200 && (
                                     <span
                                         style={{ color: '#F87555', cursor: 'pointer', marginLeft: '5px' }}
