@@ -236,6 +236,7 @@ const BookDetailCard = ({ bookDetail }) => {
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Nhà xuất bản: </strong>{publisher}</div>
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Năm xuất bản: </strong>{publicationYear}</div>
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>ISBN: </strong>{isbn}</div>
+                        <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Giá: </strong>{price} VNĐ</div>
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Ngôn ngữ: </strong>{language}</div>
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Số trang: </strong>{totalPage}</div>
 
