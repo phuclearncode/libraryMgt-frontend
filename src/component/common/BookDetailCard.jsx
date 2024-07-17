@@ -16,7 +16,6 @@ import { getWhoami } from '../../service/AuthService.js';
 import database from '../../database.json'
 
 const BookDetailCard = ({ bookDetail }) => {
-
     const { price, isbn, title, authors, description, publisher, publicationYear, language, totalPage, rating, sampleBookImages, totalReviews } = bookDetail;
     const { id } = useParams();
     const [expanded, setExpanded] = useState(false);
@@ -152,7 +151,6 @@ const BookDetailCard = ({ bookDetail }) => {
                         const totalPrice = getTotalPriceOfBook(res?.data)
                         const memberFee = res?.data[0]?.memFee
                         if (res?.data?.length >= res?.data[0]?.maxBook) {
-
                             showError("Over book can rent")
                             handleCloseBorrowBookModal()
                            
@@ -168,7 +166,6 @@ const BookDetailCard = ({ bookDetail }) => {
                                     window.location.reload()
                                     // handleCloseBorrowBookModal()
                                     // setSubmittingBorrow(false);
-
                                 }
                             }).catch(err => console.log(err))
                         }
@@ -182,7 +179,6 @@ const BookDetailCard = ({ bookDetail }) => {
                                 window.location.reload()
                                 // handleCloseBorrowBookModal()
                                 // setSubmittingBorrow(false);
-
                             }
                         }).catch(err => console.log(err))
                     }
@@ -272,6 +268,7 @@ const BookDetailCard = ({ bookDetail }) => {
                                     }}
                                     onClick={handleShowBookSampleModal}
                                 >
+
                                     Đọc thử
                                 </Button>
                             )}

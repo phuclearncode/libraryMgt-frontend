@@ -54,4 +54,3 @@ export const enrollMembership = async (body) => {
     throw error;
   }
 };
-
