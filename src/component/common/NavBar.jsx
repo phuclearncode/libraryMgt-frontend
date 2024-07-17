@@ -150,6 +150,19 @@ const NavBar = () => {
             </Nav.Link>
           </Nav.Item>
         )}
+        {librarian && (
+          <Nav.Item>
+            <Nav.Link
+              as={Link}
+              to="/admin/membership"
+              style={{ color: '#8A8A8A', fontSize: 'small' }}
+            >
+              <i class="bi bi-people"></i>
+              <span className="mx-1">Gói Thành viên</span>
+            </Nav.Link>
+          </Nav.Item>
+        )}
+
 
 
       </div>

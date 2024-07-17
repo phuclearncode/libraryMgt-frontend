@@ -9,9 +9,9 @@ const getHeader = () => {
   };
 };
 
-export const getPaymentUrl = async (amount) => {
+export const getPaymentUrl = async (id,amount) => {
   try {
-    const response = await axios.get(`${BASE_URL}/get-payment-url?amount=${amount}`, { headers: getHeader() });
+    const response = await axios.get(`${BASE_URL}/get-payment-url?amount=${amount}&memberId=${id}`, { headers: getHeader() });
     return response.data;
   } catch (error) {
     throw error;

@@ -107,9 +107,11 @@ const Login = () => {
       await timer;
       const response = await login(formData);
       if (response.status === 200) {
+
         if (isAdmin()) {
           navigate("/admin/user");
         } else if (isLibrarian()) {
+
           navigate("/admin");
         } else if (isMember()) {
           navigate("/");
