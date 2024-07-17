@@ -9,11 +9,15 @@ import useNotification from '../../hooks/useNotification.js';
 import TextInput from './TextInput.jsx';
 import TextArea from './TextArea.jsx';
 import SelectInput from './SelectInput.jsx';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { generateBarcode } from '../../util/utilities.js';
+import { getLoansByUserId, requestRent } from '../../service/RentService.js';
+import { getWhoami } from '../../service/AuthService.js';
+import database from '../../database.json'
 
 const BookDetailCard = ({ bookDetail }) => {
-    const { isbn, title, authors, description, publisher, publicationYear, language, totalPage, rating, sampleBookImages } = bookDetail;
-
+    const { price, isbn, title, authors, description, publisher, publicationYear, language, totalPage, rating, sampleBookImages } = bookDetail;
+    const { id } = useParams();
     const [expanded, setExpanded] = useState(false);
     const [showBorrowBookModal, setShowBorrowBookModal] = useState(false);
     const [showBookSampleModal, setShowBookSampleModal] = useState(false);
@@ -24,6 +28,7 @@ const BookDetailCard = ({ bookDetail }) => {
     const [member, setMember] = useState(isMember);
     const [librarian, setLibrarian] = useState(isLibrarian);
     const [authenticated, setAuthenticated] = useState(isUserAuthenticated);
+    const [barcodes, setBarCode] = useState("");
 
     useEffect(() => {
         setMember(isMember);
@@ -51,20 +56,18 @@ const BookDetailCard = ({ bookDetail }) => {
         setExpanded(!expanded);
     };
 
-    const barcodes = [
-        { label: 'BC123456', value: 'BC123456' },
-        { label: 'BC123457', value: 'BC123457' }
-    ];
 
     const getCurrentDate = () => {
         return new Date().toISOString().split('T')[0];
     };
 
     const [borrowBook, setBorrowBook] = useState({
+        id: 0,
         borrowAt: getCurrentDate(),
         returnAt: getCurrentDate(),
-        barcode: '',
-        description: ''
+        barcode: generateBarcode(),
+        description: '',
+        price: 0
     });
 
 
@@ -74,6 +77,7 @@ const BookDetailCard = ({ bookDetail }) => {
 
     const handleCloseBorrowBookModal = () => {
         setShowBorrowBookModal(false);
+        setSubmittingBorrow(false);
     };
 
     const handleShowBookSampleModal = () => {
@@ -135,20 +139,75 @@ const BookDetailCard = ({ bookDetail }) => {
     const handleBorrowBookSubmit = async () => {
 
         setSubmittingBorrow(true);
+        await getWhoami().then(res => {
+            if (res != null) {
+                getLoansByUserId(res?.id).then(res => {
+                    // check number of book can rent in a month
+                    if (res?.data?.length > 0) {
+                        // get mem id
+                        const memberId = res?.data[0]?.memberId
+                        const numberOfRent = getBenefit(memberId);
+                        // check memfee and total price of book
+                        const totalPrice = getTotalPriceOfBook(res?.data)
+                        const memberFee = res?.data[0]?.memFee
+                        if (res?.data?.length >= res?.data[0]?.maxBook) {
+                            showError("Over book can rent")
+                            handleCloseBorrowBookModal()
+                           
+                        } else if (totalPrice >= memberFee) {
+                            showError("The price is over the memberfee of this month")
+                            handleCloseBorrowBookModal()
+                        } else {
+                            borrowBook.id = id;
+                            borrowBook.price = price;
+                            console.log(borrowBook);
+                            requestRent(borrowBook).then(res => {
+                                if (res?.code === 200) {
+                                    window.location.reload()
+                                    // handleCloseBorrowBookModal()
+                                    // setSubmittingBorrow(false);
+                                }
+                            }).catch(err => console.log(err))
+                        }
 
-        try {
-            navigate('/admin/book', { state: { success: 'Mượn sách thành công' } })
-        } catch (error) {
-            console.error("Lỗi khi mượn sách:", error);
-            showError('Lỗi khi mượn sách');
-        } finally {
-            setSubmittingBorrow(false);
-            handleCloseBookSampleModal();
-        }
+                    } else {
+                        borrowBook.id = id;
+                        borrowBook.price = price;
+                        console.log(borrowBook);
+                        requestRent(borrowBook).then(res => {
+                            if (res?.code === 200) {
+                                window.location.reload()
+                                // handleCloseBorrowBookModal()
+                                // setSubmittingBorrow(false);
+                            }
+                        }).catch(err => console.log(err))
+                    }
+                })
+            }
+        })
+
     };
 
-    console.log("Borrow book: ", borrowBook);
-    console.log("Sample book images: ", sampleBookImages);
+    const getBenefit = (memberId) => {
+        let count = 0;
+        const matchingBenefits = database.membership_benefits.find(item => item.membershipId === memberId);
+        if (matchingBenefits) {
+            matchingBenefits.benefitIds.forEach(benefitId => {
+                const benefit = database.benefits.find(b => b.id === benefitId);
+                count += benefit.numberOfRent;
+            });
+        }
+        return count;
+    };
+
+    const getTotalPriceOfBook = (data) => {
+        let totalPrice = 0;
+        data?.forEach(d => {
+            totalPrice += d?.price
+        })
+        return totalPrice;
+    }
+
 
     return (
         <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
@@ -245,12 +304,13 @@ const BookDetailCard = ({ bookDetail }) => {
                 />
 
 
-                <SelectInput
+                <TextInput
                     label="Mã vạch"
                     name="barcode"
+                    // value={borrowBook.barcode}
+                    // onChange={handleChange}
+                    readOnly={true}
                     value={borrowBook.barcode}
-                    onChange={handleChange}
-                    data={barcodes}
                 />
 
                 <TextArea

@@ -66,7 +66,7 @@ const NavBar = () => {
             <Nav.Item>
               <Nav.Link as={Link} to="/contribute" className="nav-link" style={{ color: '#8A8A8A', fontSize: 'small' }}>
                 <i className="bi bi-box2-heart"></i>
-                <span className='mx-2'>Đóng góp</span>
+                <span className='mx-2'>Thành viên</span>
               </Nav.Link>
             </Nav.Item>
           </>
@@ -122,6 +122,43 @@ const NavBar = () => {
             >
               <i className="bi bi-person-vcard"></i>
               <span className="mx-1">Tác giả</span>
+            </Nav.Link>
+          </Nav.Item>
+        )}
+
+        {librarian && (
+          <Nav.Item>
+            <Nav.Link
+              as={Link}
+              to="/admin/rent"
+              style={{ color: '#8A8A8A', fontSize: 'small' }}
+            >
+              <i class="bi bi-check-circle"></i>
+              <span className="mx-1">D.sách cho thuê</span>
+            </Nav.Link>
+          </Nav.Item>
+        )}
+        {librarian && (
+          <Nav.Item>
+            <Nav.Link
+              as={Link}
+              to="/admin/book/return"
+              style={{ color: '#8A8A8A', fontSize: 'small' }}
+            >
+              <i class="bi bi-arrow-return-left"></i>
+              <span className="mx-1">D.sách trả sách</span>
+            </Nav.Link>
+          </Nav.Item>
+        )}
+        {librarian && (
+          <Nav.Item>
+            <Nav.Link
+              as={Link}
+              to="/admin/membership"
+              style={{ color: '#8A8A8A', fontSize: 'small' }}
+            >
+              <i class="bi bi-people"></i>
+              <span className="mx-1">Gói Thành viên</span>
             </Nav.Link>
           </Nav.Item>
         )}

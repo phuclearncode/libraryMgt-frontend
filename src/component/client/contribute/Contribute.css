@@ -1,0 +1,10 @@
+.contribute .tab{
+    background-color: lightgrey;
+    border-radius: 10px;
+    
+}
+
+.contribute .tab:hover{
+    opacity: 0.8;  
+    cursor: pointer
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Form } from 'react-bootstrap';
 import "../../assets/style/Style.css";
 
-const TextInput = ({ label, name, value, onChange, type, placeholder }) => {
+const TextInput = ({ label, name, value, onChange, type, placeholder, readOnly }) => {
   const handleChange = (e) => {
     console.log('name:', name, 'value:', e.target.value);
     onChange(e);
@@ -19,6 +19,7 @@ const TextInput = ({ label, name, value, onChange, type, placeholder }) => {
         name={name}
         value={value}
         onChange={handleChange}
+        readOnly={readOnly}
       />
     </Form.Group>
   );
