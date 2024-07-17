@@ -266,7 +266,6 @@ const BookDetailCard = ({ bookDetail }) => {
                                     }}
                                     onClick={handleShowBookSampleModal}
                                 >
-
                                     Đọc thử
                                 </Button>
                             )}
