@@ -97,6 +97,7 @@ const RentComponent = () => {
                     <tbody>
                         {rent?.map((r, idx) => (
                             <tr key={idx}>
+
                                 <td className="align-middle">{r?.userName}</td>
                                 <td className="align-middle">{r?.bookCopyResponse?.barcode}</td>
                                 <td className="align-middle">{r?.borrowAt}</td>

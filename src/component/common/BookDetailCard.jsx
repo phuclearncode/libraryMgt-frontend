@@ -16,7 +16,8 @@ import { getWhoami } from '../../service/AuthService.js';
 import database from '../../database.json'
 
 const BookDetailCard = ({ bookDetail }) => {
-    const { price, isbn, title, authors, description, publisher, publicationYear, language, totalPage, rating, sampleBookImages } = bookDetail;
+
+    const { price, isbn, title, authors, description, publisher, publicationYear, language, totalPage, rating, sampleBookImages, totalReviews } = bookDetail;
     const { id } = useParams();
     const [expanded, setExpanded] = useState(false);
     const [showBorrowBookModal, setShowBorrowBookModal] = useState(false);
@@ -151,6 +152,7 @@ const BookDetailCard = ({ bookDetail }) => {
                         const totalPrice = getTotalPriceOfBook(res?.data)
                         const memberFee = res?.data[0]?.memFee
                         if (res?.data?.length >= res?.data[0]?.maxBook) {
+
                             showError("Over book can rent")
                             handleCloseBorrowBookModal()
                            
@@ -166,6 +168,7 @@ const BookDetailCard = ({ bookDetail }) => {
                                     window.location.reload()
                                     // handleCloseBorrowBookModal()
                                     // setSubmittingBorrow(false);
+
                                 }
                             }).catch(err => console.log(err))
                         }
@@ -179,6 +182,7 @@ const BookDetailCard = ({ bookDetail }) => {
                                 window.location.reload()
                                 // handleCloseBorrowBookModal()
                                 // setSubmittingBorrow(false);
+
                             }
                         }).catch(err => console.log(err))
                     }
@@ -225,7 +229,7 @@ const BookDetailCard = ({ bookDetail }) => {
                                 emptySymbol={<BsStar style={{ color: 'lightgray', marginRight: '5px' }} />}
                                 halfSymbol={<BsStarHalf style={{ color: 'gold', marginRight: '5px' }} />}
                             />
-                            <span style={{ marginLeft: '5px' }}>(100)</span>
+                            <span style={{ marginLeft: '5px' }}>({totalReviews})</span>
                         </div>
                         <div style={{ fontSize: 'small', marginBottom: '10px', textAlign: 'justify' }}>
                             {formatDescription(description)}
@@ -238,6 +242,7 @@ const BookDetailCard = ({ bookDetail }) => {
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Nhà xuất bản: </strong>{publisher}</div>
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Năm xuất bản: </strong>{publicationYear}</div>
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>ISBN: </strong>{isbn}</div>
+                        <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Giá: </strong>{price} VNĐ</div>
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Ngôn ngữ: </strong>{language}</div>
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Số trang: </strong>{totalPage}</div>
 
@@ -267,7 +272,6 @@ const BookDetailCard = ({ bookDetail }) => {
                                     }}
                                     onClick={handleShowBookSampleModal}
                                 >
-
                                     Đọc thử
                                 </Button>
                             )}

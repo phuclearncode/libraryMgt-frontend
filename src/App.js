@@ -31,6 +31,7 @@ import MyShelf from "./component/client/myshelf/MyShelf";
 import Search from "./component/client/search/Search";
 import BookCategory from "./component/common/BookCategory";
 import Layout from "./component/common/Layout";
+
 import { AdminRoute, LibrarianRoute, ProtectedRoute } from "./routes/Guard";
 import PaymentConfirm from "./component/payment/PaymenConfirm";
 
@@ -91,7 +92,6 @@ const App = () => {
             <Route path="membership" element={<LibrarianRoute element={<Membership />} />} />
             <Route path="membership/add" element={<LibrarianRoute element={<AddMembership />} />} />
             <Route path="membership/edit" element={<LibrarianRoute element={<EditMembership />} />} />
-
           </Route>
 
           {/* Redirect any unmatched route to home */}

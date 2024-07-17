@@ -8,19 +8,17 @@
 
 .verify {
     width: 400px;
-    height: 650px;
-    padding: 40px;
+    padding: 20px;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    
 }
 
 .verify-logo {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .verify-logo img{
@@ -97,22 +95,13 @@
 .btn-verify {
     width: 100%;
     height: 35px;
-    margin-top: 290px;
+    margin-top: 10px;
 }
 
 .btn-back {
     width: 100%;
-    height: 35px;
-    margin-top: 290px;
-    background-color: #fff;
-    border: 1px solid #ABABAB;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #4D4D4D;
-    font-size: small;
-    text-decoration: none;
+    height: 32px;
+    margin-top: 10px;
 }
 
 .verify-success {
