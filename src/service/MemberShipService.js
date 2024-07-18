@@ -18,4 +18,39 @@ export const getMemberships = async () => {
   }
 };
 
+export const addMemberSub = async (body) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/add-subscription` , body , { headers: getHeader() });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
+export const updateMemberSub = async (body) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/update-subscription` , body , { headers: getHeader() });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const deleteMemberSub = async (body) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/delete-subscription` , body , { headers: getHeader() });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const enrollMembership = async (body) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/enroll-membership` , body , { headers: getHeader() });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

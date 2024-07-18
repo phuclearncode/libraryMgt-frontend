@@ -150,7 +150,7 @@ const BookDetailCard = ({ bookDetail }) => {
                         // check memfee and total price of book
                         const totalPrice = getTotalPriceOfBook(res?.data)
                         const memberFee = res?.data[0]?.memFee
-                        if (res?.data?.length >= numberOfRent) {
+                        if (res?.data?.length >= res?.data[0]?.maxBook) {
                             showError("Over book can rent")
                             handleCloseBorrowBookModal()
                            
@@ -163,8 +163,9 @@ const BookDetailCard = ({ bookDetail }) => {
                             console.log(borrowBook);
                             requestRent(borrowBook).then(res => {
                                 if (res?.code === 200) {
-                                    handleCloseBorrowBookModal()
-                                    setSubmittingBorrow(false);
+                                    window.location.reload()
+                                    // handleCloseBorrowBookModal()
+                                    // setSubmittingBorrow(false);
                                 }
                             }).catch(err => console.log(err))
                         }
@@ -175,8 +176,9 @@ const BookDetailCard = ({ bookDetail }) => {
                         console.log(borrowBook);
                         requestRent(borrowBook).then(res => {
                             if (res?.code === 200) {
-                                handleCloseBorrowBookModal()
-                                setSubmittingBorrow(false);
+                                window.location.reload()
+                                // handleCloseBorrowBookModal()
+                                // setSubmittingBorrow(false);
                             }
                         }).catch(err => console.log(err))
                     }

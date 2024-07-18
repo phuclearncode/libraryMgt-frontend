@@ -26,9 +26,9 @@ const Contribute = () => {
     await getMemberships().then(res => {
       if (res?.code === 200) {
         // Merge membership data with benefits from db.json
-        const mergedMemberships = mergeMembershipWithBenefits(res?.data, database);
-        console.log("hehe", mergedMemberships);
-        setData(mergedMemberships);
+        // const mergedMemberships = mergeMembershipWithBenefits(res?.data, database);
+        // console.log("hehe", mergedMemberships);
+        setData(res?.data);
 
       } else {
         showError(res.message);
@@ -53,12 +53,12 @@ const Contribute = () => {
     return memberships;
   }
 
-  const handleOnClick = async (amount) => {
-    await getPaymentUrl(amount)
+  const handleOnClick = async (id,amount) => {
+    await getPaymentUrl(id,amount)
     .then(res => {
       if(res?.code === 200){
         console.log(res);
-        // window.location.href = res?.data?.url
+        window.location.href = res?.data?.url
       }
     })
     .catch(error => console.log(error))
@@ -71,14 +71,14 @@ const Contribute = () => {
       <div className='col-10 row d-flex contribute'>
         {
           data.map((mem, idx) =>
-            <div key={idx} className='col-3 m-3 tab' onClick={() => handleOnClick(mem?.feeMember)}>
+            <div key={idx} className='col-3 m-3 tab' onClick={() => handleOnClick(mem?.id, mem?.feeMember)}>
               <div className='text-center py-2'>{mem?.nameSubscription}</div>
-              <div className='text-center py-2' style={{ fontSize: '3rem' }}>${mem?.feeMember}</div>
+              <div className='text-center py-2' style={{ fontSize: '3rem' }}>{mem?.feeMember} VND</div>
               {
                 mem?.benefits.map((b, idx) => (
                   <ul key={idx}>
                     <li>
-                      {b.name}
+                      {b?.name}
                     </li>
                   </ul>
                 ))
