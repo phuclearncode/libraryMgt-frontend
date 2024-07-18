@@ -49,10 +49,11 @@ const User = () => {
           style={{
             fontSize: 'small',
             backgroundColor: '#F87555',
-            border: 'none'
+            border: 'none',
+            marginLeft: '10px'
           }}
         >
-          <i className="bi bi-person-plus"></i>
+          <i className="bi bi-plus-lg"></i>
           <span className='m-2'>Thêm</span>
         </Link>
       </div>
@@ -60,8 +61,7 @@ const User = () => {
       <Table
         style={{
           fontSize: 'small',
-          border: '1px solid #DEDEE1',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)'
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)"
         }}
       >
         <thead>
@@ -82,8 +82,8 @@ const User = () => {
               <td>{user.email}</td>
               <td>{user.phoneNumber}</td>
               <td>{user.role}</td>
-              <td>{user.status == 'ACTIVE' ? 'Đã kích hoạt' : 'Chưa kích hoạt'}</td>
-              <td>{user.verified == true ? 'Đã xác thực' : 'Chưa xác thực'}</td>
+              <td>{user.status === 'ACTIVE' ? 'Đang hoạt động' : 'Khóa tài khoản'}</td>
+              <td>{user.verified === true ? 'Đã xác thực' : 'Chưa xác thực'}</td>
               <td>
                 <Link
                   to={`/admin/user/edit/${user.id}`}

@@ -8,8 +8,7 @@
 
 .register {
     width: 400px;
-    height: 650px;
-    padding: 40px;
+    padding: 20px;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -20,7 +19,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .register-logo img{
@@ -33,7 +32,7 @@
 }
 
 .register-title a {
-    color: #4D4D4D;
+    color: #4d4d4d;
     font-size: small;
     font-weight: regular;
     margin-left: 5px;
@@ -57,24 +56,31 @@
     justify-content: center;
     font-size: small;
     font-weight: regular;
-    color: #ABABAB;
+    color: #ababab;
 }
 
 .label {
     font-size: small;
-    font-weight: bold;
 }
 
 .field-input {
     width: 100%;
-    height: 35px;
+    height: 32px;
     padding: 0 10px;
-    border: 1px solid #ABABAB;
+    border: 1px solid #ababab;
     border-radius: 5px;
 }
 
 .btn-register {
     width: 100%;
-    height: 35px;
+    height: 32px;
     margin-top: 10px;
+}
+
+
+.text-danger, .text-success {
+    font-size: x-small;
+    word-wrap: break-word;
+    max-width: 100%;
+    margin-top: 5px;
 }
