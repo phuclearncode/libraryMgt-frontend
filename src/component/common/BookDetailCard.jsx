@@ -137,6 +137,11 @@ const BookDetailCard = ({ bookDetail }) => {
 
 
     const handleBorrowBookSubmit = async () => {
+        if (!authenticated) {
+            showError("Vui lòng đăng nhập trước khi mượn sách");
+            navigate('/login');
+            return;
+        }
 
         setSubmittingBorrow(true);
         await getWhoami().then(res => {
@@ -150,13 +155,13 @@ const BookDetailCard = ({ bookDetail }) => {
                         // check memfee and total price of book
                         const totalPrice = getTotalPriceOfBook(res?.data)
                         const memberFee = res?.data[0]?.memFee
-                        if (res?.data?.length >= res?.data[0]?.maxBook) {
-                            showError("Over book can rent")
-                            handleCloseBorrowBookModal()
-                           
-                        } else if (totalPrice >= memberFee) {
-                            showError("The price is over the memberfee of this month")
-                            handleCloseBorrowBookModal()
+                            if (res?.data?.length >= res?.data[0]?.maxBook) {
+                                showError("Không thể thêm mượn sách")
+                                handleCloseBorrowBookModal()
+                            
+                            } else if (totalPrice >= memberFee) {
+                                showError("Không thể mượn sách có giá cao hơn phí thành viên")
+                                handleCloseBorrowBookModal()
                         } else {
                             borrowBook.id = id;
                             borrowBook.price = price;
@@ -243,36 +248,36 @@ const BookDetailCard = ({ bookDetail }) => {
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Số trang: </strong>{totalPage}</div>
 
                         <div className="d-flex flex-start mt-3">
-                            {(member || !authenticated) && (
-                                <Button
-                                    type="submit"
-                                    style={{
-                                        fontSize: 'small',
-                                        backgroundColor: '#F87555',
-                                        border: 'none',
-                                        marginRight: '10px'
-                                    }}
-                                    onClick={handleShowBorrowBookModal}
-                                >
-                                    Mượn sách
-                                </Button>
-                            )}
-                            {(librarian || member || !authenticated) && (
-                                <Button
-                                    type="button"
-                                    style={{
-                                        fontSize: 'small',
-                                        backgroundColor: 'transparent',
-                                        color: '#4D4D4D',
-                                        border: '1px solid #ABABAB'
-                                    }}
-                                    onClick={handleShowBookSampleModal}
-                                >
+    {authenticated && member && (
+        <Button
+            type="submit"
+            style={{
+                fontSize: 'small',
+                backgroundColor: '#F87555',
+                border: 'none',
+                marginRight: '10px'
+            }}
+            onClick={handleShowBorrowBookModal}
+        >
+            Mượn sách
+        </Button>
+    )}
+    {(librarian || member || !authenticated) && (
+        <Button
+            type="button"
+            style={{
+                fontSize: 'small',
+                backgroundColor: 'transparent',
+                color: '#4D4D4D',
+                border: '1px solid #ABABAB'
+            }}
+            onClick={handleShowBookSampleModal}
+        >
+            Đọc thử
+        </Button>
+    )}
+</div>
 
-                                    Đọc thử
-                                </Button>
-                            )}
-                        </div>
                     </Card.Text>
                 </Card.Body>
             </Card>
