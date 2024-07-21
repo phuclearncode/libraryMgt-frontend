@@ -125,6 +125,7 @@ const EditMembership = () => {
         }
         // console.log(formData);
         setSubmitting(true);
+        await new Promise(r => setTimeout(r, 2000));
 
         try {
             await updateMemberSub(formData).then(resp => {
@@ -167,7 +168,7 @@ const EditMembership = () => {
         <div style={{ margin: '0 200px' }}>
             <Notification />
             <div style={{ marginBottom: '20px' }}>
-                <h5 >Thêm tác giả</h5>
+                <h5>Cập nhật gói thành viên</h5>
             </div>
             <Form onSubmit={handleSubmit}>
 
@@ -206,8 +207,8 @@ const EditMembership = () => {
                     onChange={handleChange}
                 />
 
-                {benefits && <Form.Group>
-                    <Form.Label>Benefits</Form.Label>
+                {benefits && <Form.Group className='mb-3'>
+                    <Form.Label>Những điều khoản của gói thành viên</Form.Label>
                     {benefits.map((benefit, index) => {
                         return <Form.Check
                             type="checkbox"
@@ -216,6 +217,10 @@ const EditMembership = () => {
                             checked={formData.selectedBenefits.some(obj => obj.id === benefit?.id)}
                             onChange={handleBenefitChange}
                             key={index}
+                            style={{
+                                fontSize: 'small',
+                                margin: '0 10px'
+                            }}
                         />
                     })}
                 </Form.Group>}

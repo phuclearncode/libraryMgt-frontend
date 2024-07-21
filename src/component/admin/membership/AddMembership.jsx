@@ -80,6 +80,7 @@ const AddMembership = () => {
         }
         console.log(formData);
         setSubmitting(true);
+        await new Promise(r => setTimeout(r, 2000));
 
         try {
             await addMemberSub(formData).then(resp => {
@@ -121,7 +122,7 @@ const AddMembership = () => {
         <div style={{ margin: '0 200px' }}>
             <Notification />
             <div style={{ marginBottom: '20px' }}>
-                <h5 >Thêm member</h5>
+                <h5 >Thêm gói thành viên</h5>
             </div>
             <Form onSubmit={handleSubmit}>
 
@@ -161,8 +162,8 @@ const AddMembership = () => {
                 />
 
 
-                {benefits && <Form.Group>
-                    <Form.Label>Benefits</Form.Label>
+                {benefits && <Form.Group className='mb-3'>
+                    <Form.Label>Những điều khoản của gói thành viên</Form.Label>
                     {benefits.map((benefit, index) => (
                         <Form.Check
                             type="checkbox"
@@ -171,6 +172,10 @@ const AddMembership = () => {
                             checked={formData.selectedBenefits.includes(benefit?.id + "")}
                             onChange={handleBenefitChange}
                             key={index}
+                            style={{
+                                fontSize: 'small',
+                                margin: '0 10px'
+                            }}
                         />
                     ))}
                 </Form.Group>}

@@ -48,8 +48,13 @@ const BookCategory = () => {
     const handleChange = (selectedValue) => {
         const selectedSubCategoryId = selectedValue.target.value;
         setSelectedSubCategoryId(selectedSubCategoryId);
-        const url = `/book/category/${parentCategoryId}/${selectedSubCategoryId}`;
-        navigate(url);
+        if (selectedSubCategoryId) {
+            const url = `/book/category/${parentCategoryId}/${selectedSubCategoryId}`;
+            navigate(url);
+        } else {
+            const url = `/book/category/${parentCategoryId}`;
+            navigate(url);
+        }
     };
 
     useEffect(() => {

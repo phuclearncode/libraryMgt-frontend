@@ -147,7 +147,6 @@ const Search = () => {
                     <th>Tiêu đề</th>
                     <th>Đánh giá</th>
                     <th>Danh mục</th>
-                    <th>Có sẵn</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -182,7 +181,6 @@ const Search = () => {
                           </div>
                         ))}
                       </td>
-                      <td className="align-middle">{book.stock}</td>
                       <td className="align-middle">
                         <Button
                           as={Link}

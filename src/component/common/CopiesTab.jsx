@@ -45,9 +45,6 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
     }, [bookId]);
 
 
-
-
-
     const handleAdd = async () => {
         setSubmitting(true);
         const timer = new Promise((resolve) => setTimeout(resolve, 2000));
@@ -239,11 +236,11 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Mã vạch</th>
+                            <th>Mã cho thuê</th>
                             {librarian && <th>Thời gian sửa đổi</th>}
                             {librarian && <th>Người sửa đổi</th>}
                             <th>Trạng thái</th>
-                            {member && <><th>Lí do</th><th></th></>}
+                            {member && <th>Lí do</th>}
                             <th></th>
                         </tr>
                     </thead>
@@ -256,8 +253,10 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                                     {librarian && <td className="align-middle">{copy.updatedAt}</td>}
                                     {librarian && <td className="align-middle">{copy.updatedBy}</td>}
                                     <td className="align-middle">{copy.status}</td>
-                                    {copy?.status == 'REJECT' && <td className="align-middle">{copy?.loanInfo[copy?.loanInfo?.length - 1]?.note}</td>}
-                                    {copy?.status == 'ACTIVE' && <><td></td><td className="align-middle">
+                                    {copy?.status == 'REJECT' ? (<td className="align-middle">{copy?.loanInfo[copy?.loanInfo?.length - 1]?.note}</td>) : (
+                                        <td className="align-middle"></td>
+                                    )}
+                                    {copy?.status == 'ACTIVE' ? (<td className="align-middle">
                                         <Button
                                             style={{
                                                 fontSize: 'small',
@@ -271,7 +270,9 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                                             <i class="bi bi-arrow-return-left"></i>
                                             <span className="m-1">Trả sách</span>
                                         </Button>
-                                    </td></>}
+                                    </td>) : (
+                                        <td className="align-middle"></td>
+                                    )}
                                     {librarian && (
                                         <td className="align-middle">
                                             <Button

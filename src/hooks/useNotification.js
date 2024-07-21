@@ -1,4 +1,4 @@
-import { successNotification, errorNotification } from '../component/common/Notification';
+import { successNotification, errorNotification, infoNotification, warningNotification } from '../component/common/Notification';
 
 const useNotification = () => {
   const showSuccess = (description) => {
@@ -9,9 +9,19 @@ const useNotification = () => {
     errorNotification(description);
   };
 
+  const showInfo = (description) => {
+    infoNotification(description);
+  };
+
+  const showWarning = (description) => {
+    warningNotification(description);
+  };
+
   return {
     showSuccess,
-    showError
+    showError,
+    showInfo,
+    showWarning
   };
 };
 

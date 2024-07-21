@@ -18,6 +18,30 @@ export const getMemberships = async () => {
   }
 };
 
+export const checkUserSubscribed = async (userId, subscriptionId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/check-user-subscription` , {
+      params: { userId, subscriptionId },
+      headers: getHeader() 
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const isUserSubscribed = async (userId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/is-user-subscribed` , {
+      params: { userId },
+      headers: getHeader() 
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const addMemberSub = async (body) => {
   try {
     const response = await axios.post(`${BASE_URL}/add-subscription` , body , { headers: getHeader() });

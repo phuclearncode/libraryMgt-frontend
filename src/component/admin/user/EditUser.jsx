@@ -62,11 +62,8 @@ const EditUser = () => {
         let valid = true;
 
         const validateFullName = (fullName) => {
-            const fullNamePattern = /^[a-zA-Z\s]*$/;
             if (!fullName) {
                 return "Vui lòng nhập họ và tên";
-            } else if (!fullNamePattern.test(fullName)) {
-                return "Họ và tên chỉ chứa chữ cái và dấu cách";
             }
             return "";
         };
@@ -90,19 +87,15 @@ const EditUser = () => {
         }
 
         const validatePassword = (password) => {
-            if (!password) {
-                return "Vui lòng nhập mật khẩu";
-            }
             newPasswordConditions.length = password.length >= 8;
             newPasswordConditions.uppercase = /[A-Z]/.test(password);
             newPasswordConditions.lowercase = /[a-z]/.test(password);
             newPasswordConditions.digit = /\d/.test(password);
-            return "";
         };
 
         const validateConfirmPassword = (password, confirmPassword) => {
             if (!confirmPassword) {
-                return "Vui lòng xác nhận mật khẩu";
+                return password ? "Vui lòng xác nhận mật khẩu" : "";
             } else if (password !== confirmPassword) {
                 return "Mật khẩu không khớp";
             }
@@ -151,26 +144,48 @@ const EditUser = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-
-        if (!validateForm('fullName', user.fullName) || !validateForm('email', user.email) || !validateForm('phoneNumber', user.phoneNumber) || !validateForm('password', passwordData.password) || !validateForm('confirmPassword', passwordData.confirmPassword)) {
+    
+        // Validate form fields except for password and confirm password
+        let isFormValid = validateForm('fullName', user.fullName) &&
+                          validateForm('email', user.email) &&
+                          validateForm('phoneNumber', user.phoneNumber);
+    
+        // Validate password and confirm password
+        if (passwordData.password || passwordData.confirmPassword) {
+            // Check if both password and confirmPassword are provided
+            if (!passwordData.password || !passwordData.confirmPassword) {
+                // At least one of the password fields is empty, show appropriate error
+                if (!passwordData.password) {
+                    setErrors(prevErrors => ({ ...prevErrors, password: "Vui lòng nhập mật khẩu" }));
+                }
+                if (!passwordData.confirmPassword) {
+                    setErrors(prevErrors => ({ ...prevErrors, confirmPassword: "Vui lòng xác nhận mật khẩu" }));
+                }
+                isFormValid = false;
+            } else {
+                // Both fields are provided, validate them
+                isFormValid = validateForm('password', passwordData.password) &&
+                              validateForm('confirmPassword', passwordData.confirmPassword) &&
+                              passwordConditions.length &&
+                              passwordConditions.uppercase &&
+                              passwordConditions.lowercase &&
+                              passwordConditions.digit;
+            }
+        }
+    
+        if (!isFormValid) {
             return;
         }
-
-        if (!passwordConditions.length || !passwordConditions.uppercase || !passwordConditions.lowercase || !passwordConditions.digit) {    
-            return;
-        }
-
+    
         setSubmitting(true);
         const timer = new Promise((resolve) => setTimeout(resolve, 2000));
-
+    
         try {
             const updatedUser = { ...user };
             if (passwordData.password && passwordData.confirmPassword) {
-
                 updatedUser.password = passwordData.password;
             }
-
+    
             await timer;
             const response = await updateUser(id, updatedUser);
             if (response.status === 200) {
@@ -178,14 +193,16 @@ const EditUser = () => {
             } else {
                 showError(response.message);
             }
-
         } catch (error) {
             console.error('Error updating user:', error);
-            showError('Có lỗi xảy ra, vui lòng thử lại sau');
+            showError('Có lỗi xảy ra, vui lòng thử lại sau');
         } finally {
             setSubmitting(false);
         }
     };
+    
+    
+
 
 
 

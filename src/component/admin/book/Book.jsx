@@ -185,7 +185,6 @@ const Book = () => {
                 <th>Người sửa đổi</th>
                 <th>Đánh giá</th>
                 <th>Danh mục</th>
-                <th>Có sẵn</th>
                 <th>Trạng thái</th>
                 <th></th>
               </tr>
@@ -223,7 +222,6 @@ const Book = () => {
                       </div>
                     ))}
                   </td>
-                  <td className="align-middle">{book.stock}</td>
                   <td className="align-middle">{book.status}</td>
                   <td className="align-middle">
                     <Button

@@ -14,4 +14,12 @@ export const errorNotification = (description) => {
   toast.error(`${description}`);
 };
 
+export const infoNotification = (description) => {
+  toast.info(`${description}`);
+};
+
+export const warningNotification = (description) => {
+  toast.warn(`${description}`);
+}
+
 export default Notification;

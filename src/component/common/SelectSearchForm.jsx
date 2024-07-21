@@ -20,7 +20,7 @@ const SelectSearchForm = ({ options, onSelectChange, onSearchChange }) => {
         className="d-flex"
         style={{
           border: "1px solid #DEDEE1",
-          borderRadius: "10px",
+          borderRadius: "5px",
           backgroundColor: "#fff",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
         }}

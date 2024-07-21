@@ -55,3 +55,14 @@ export const updateUser = async (id, userData) => {
     }
 }
 
+export const getUserChart = async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/get-user-chart`, {
+            headers: getHeader()
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
