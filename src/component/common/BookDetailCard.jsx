@@ -136,26 +136,25 @@ const BookDetailCard = ({ bookDetail }) => {
 
 
     const handleBorrowBookSubmit = async () => {
+        if (!authenticated) {
+            showError("Vui lòng đăng nhập trước khi mượn sách");
+            navigate('/login');
+            return;
+        }
+
         setSubmittingBorrow(true);
         await new Promise(r => setTimeout(r, 2000));
     
         try {
             const user = await getWhoami();
-            console.log("res", user);
-            
             if (user != null) {
                 const isSubscribed = await isUserSubscribed(user?.id);
-                console.log("isSubscribed", isSubscribed);
-
                 const isValid = isSubscribed?.data;
-                
                 if (!isValid) {
                     navigate('/contribute', { state: { success: 'Bạn cần mua gói thành viên để mượn sách' } });
                     return;
                 }
-    
                 const loansResponse = await getLoansByUserId(user?.id);
-                console.log("resssss", loansResponse);
     
                 if (loansResponse?.data?.length > 0) {
                     const memberId = loansResponse?.data[0]?.memberId;
@@ -261,36 +260,36 @@ const BookDetailCard = ({ bookDetail }) => {
                         <div style={{ fontSize: 'small', margin: '0 0 5px 0' }}><strong>Số trang: </strong>{totalPage}</div>
 
                         <div className="d-flex flex-start mt-3">
-                            {(member || !authenticated) && (
-                                <Button
-                                    type="submit"
-                                    style={{
-                                        fontSize: 'small',
-                                        backgroundColor: '#F87555',
-                                        border: 'none',
-                                        marginRight: '10px'
-                                    }}
-                                    onClick={handleShowBorrowBookModal}
-                                >
-                                    Mượn sách
-                                </Button>
-                            )}
-                            {(librarian || member || !authenticated) && (
-                                <Button
-                                    type="button"
-                                    style={{
-                                        fontSize: 'small',
-                                        backgroundColor: 'transparent',
-                                        color: '#4D4D4D',
-                                        border: '1px solid #ABABAB'
-                                    }}
-                                    onClick={handleShowBookSampleModal}
-                                >
+    {authenticated && member && (
+        <Button
+            type="submit"
+            style={{
+                fontSize: 'small',
+                backgroundColor: '#F87555',
+                border: 'none',
+                marginRight: '10px'
+            }}
+            onClick={handleShowBorrowBookModal}
+        >
+            Mượn sách
+        </Button>
+    )}
+    {(librarian || member || !authenticated) && (
+        <Button
+            type="button"
+            style={{
+                fontSize: 'small',
+                backgroundColor: 'transparent',
+                color: '#4D4D4D',
+                border: '1px solid #ABABAB'
+            }}
+            onClick={handleShowBookSampleModal}
+        >
+            Đọc thử
+        </Button>
+    )}
+</div>
 
-                                    Đọc thử
-                                </Button>
-                            )}
-                        </div>
                     </Card.Text>
                 </Card.Body>
             </Card>
