@@ -97,7 +97,7 @@ const AddMembership = () => {
 
                     navigate('/admin/membership', { state: { success: resp?.data?.message } });
                 }
-            }).catch(err => showError("error"));
+            }).catch(err => showError("Gói thành viên đã tồn tại"));
             // await timer;
 
 
