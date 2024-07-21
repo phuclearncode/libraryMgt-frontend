@@ -29,10 +29,7 @@ const MyShelf = () => {
     { name: 'Đang xác nhận', value: 'PENDING' },
     { name: 'Đang trả', value: 'RETURNING' },
     { name: 'Đã trả', value: 'RETURNED' },
-    { name: 'Bị từ chối', value: 'REJECT' },
-    { name: 'Quá hạn', value: 'OVERDUE' },
-    { name: 'Hỏng', value: 'DAMAGED' },
-    { naem: 'Đã mất', value: 'LOST' }
+    { name: 'Bị từ chối', value: 'REJECT' }
   ]
 
   const fetchLoans = async (status) => {
