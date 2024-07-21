@@ -6,13 +6,17 @@ import { getUserById, updateUser } from '../../../service/UserService'
 import useNotification from '../../../hooks/useNotification'
 import Notification from '../../common/Notification'
 import "../../../assets/style/User.css"
+import { useAuth } from '../../context/AuthContext'
 
-const EditUser = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const { showError } = useNotification();
+const Profile = () => {
+    const { showError, showSuccess } = useNotification();
     const [submitting, setSubmitting] = useState(false);
-    const [user, setUser] = useState({});
+    const [profile, setProfile] = useState({});
+
+    const { user } = useAuth();
+
+    console.log("User:", user);
+
     const [passwordData, setPasswordData] = useState({
         password: '',
         confirmPassword: ''
@@ -36,22 +40,22 @@ const EditUser = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const user = await getUserById(id);
-                setUser(user.data);
+                const response = await getUserById(user.id);
+                setProfile(response.data);
             } catch (error) {
                 console.error("Error fetching user:", error);
             }
         };
 
         fetchData();
-    }, [id]);
+    }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'password' || name === 'confirmPassword') {
             setPasswordData({ ...passwordData, [name]: value });
         } else {
-            setUser({ ...user, [name]: value });
+            setProfile({ ...profile, [name]: value });
         }
         validateForm(name, value);
     }
@@ -145,9 +149,9 @@ const EditUser = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
     
-        let isFormValid = validateForm('fullName', user.fullName) &&
-                          validateForm('email', user.email) &&
-                          validateForm('phoneNumber', user.phoneNumber);
+        let isFormValid = validateForm('fullName', profile.fullName) &&
+                          validateForm('email', profile.email) &&
+                          validateForm('phoneNumber', profile.phoneNumber);
     
         if (passwordData.password || passwordData.confirmPassword) {
             if (!passwordData.password || !passwordData.confirmPassword) {
@@ -176,15 +180,15 @@ const EditUser = () => {
         const timer = new Promise((resolve) => setTimeout(resolve, 2000));
     
         try {
-            const updatedUser = { ...user };
+            const updatedUser = { ...profile };
             if (passwordData.password && passwordData.confirmPassword) {
                 updatedUser.password = passwordData.password;
             }
     
             await timer;
-            const response = await updateUser(id, updatedUser);
+            const response = await updateUser(user.id, updatedUser);
             if (response.status === 200) {
-                navigate('/admin/user', { state: { success: response.message } });
+                showSuccess('Cập nhật thành công');
             } else {
                 showError(response.message);
             }
@@ -195,6 +199,8 @@ const EditUser = () => {
             setSubmitting(false);
         }
     };
+
+    console.log("Profile:", profile);
 
     return (
         <div style={{ margin: '0 200px' }}>
@@ -211,7 +217,7 @@ const EditUser = () => {
                         placeholder="Nguyen Van A"
                         style={{ fontSize: "small", margin: '0' }}
                         name="fullName"
-                        value={user.fullName}
+                        value={profile.fullName}
                         onChange={handleChange}
                         onBlur={handleBlur}
                     />
@@ -226,7 +232,7 @@ const EditUser = () => {
                         placeholder="email@example.com"
                         style={{ fontSize: "small", margin: '0' }}
                         name="email"
-                        value={user.email}
+                        value={profile.email}
                         onChange={handleChange}
                         onBlur={handleBlur}
                     />
@@ -242,7 +248,7 @@ const EditUser = () => {
                             placeholder=""
                             style={{ fontSize: "small", margin: '0' }}
                             name="phoneNumber"
-                            value={user.phoneNumber}
+                            value={profile.phoneNumber}
                             onChange={handleChange}
                             onBlur={handleBlur}
                         />
@@ -257,7 +263,7 @@ const EditUser = () => {
                             placeholder=""
                             style={{ fontSize: "small" }}
                             name="role"
-                            value={user.role}
+                            value={profile.role}
                             onChange={handleChange}
                         >
                             <option
@@ -285,20 +291,20 @@ const EditUser = () => {
                             placeholder=""
                             style={{ fontSize: "small" }}
                             name="status"
-                            value={user.status}
+                            value={profile.status}
                             onChange={handleChange}
                         >
                             <option
                                 value="ACTIVE"
                                 style={{ fontSize: "small" }}
-                                defaultValue={user.status === "ACTIVE"}
+                                defaultValue={profile.status === "ACTIVE"}
                             >
                                 Đã kích hoạt
                             </option>
                             <option
                                 value="INACTIVE"
                                 style={{ fontSize: "small" }}
-                                defaultValue={user.status === "INACTIVE"}
+                                defaultValue={profile.status === "INACTIVE"}
                             >
                                 Chưa kích hoạt
                             </option>
@@ -370,4 +376,4 @@ const EditUser = () => {
     )
 }
 
-export default EditUser
+export default Profile

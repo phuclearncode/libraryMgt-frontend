@@ -215,7 +215,7 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
         <div style={{ margin: '20px 0' }}>
             <Notification />
 
-            {librarian && (
+            {/* {librarian && (
                 <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '20px 0' }}>
                     <Button
                         style={{
@@ -229,7 +229,7 @@ const CopiesTab = ({ bookId, bookCopies, fetchBookDetail }) => {
                         <span className="m-2">Thêm</span>
                     </Button>
                 </div>
-            )}
+            )} */}
 
             {bookCopies && bookCopies.length > 0 ? (
                 <Table style={{ fontSize: 'small' }}>

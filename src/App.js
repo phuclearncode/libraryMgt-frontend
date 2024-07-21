@@ -33,6 +33,7 @@ import BookCategory from "./component/common/BookCategory";
 import Layout from "./component/common/Layout";
 import { AdminRoute, LibrarianRoute, ProtectedRoute } from "./routes/Guard";
 import PaymentConfirm from "./component/payment/PaymenConfirm";
+import Profile from "./component/client/profile/Profile";
 
 const App = () => {
   return (
@@ -46,8 +47,6 @@ const App = () => {
             <Route path="book/detail/:id" element={<BookDetail />} />
             <Route path="book/category/:parentCategoryId" element={<BookCategory />} />
             <Route path="book/category/:parentCategoryId/:subCategoryId" element={<BookCategory />} />
-            <Route path="my-shelf" element={<MyShelf />} />
-            <Route path="contribute" element={<Contribute />} />
           </Route>
 
           <Route path="/login" element={<Login />} />
@@ -57,9 +56,11 @@ const App = () => {
           <Route path="/resetpassword" element={<ResetPassword />} />
 
           {/* Client Protected Routes */}
-          {/* <Route path="/" element={<ProtectedRoute element={Layout} />} >
-            <Route path="search/detail/:id" element={<M element={<BookDetail />} />} />
-          </Route> */}
+          <Route path="/" element={<ProtectedRoute element={<Layout />} />} >
+            <Route path="profile" element={<Profile />} />
+            <Route path="my-shelf" element={<MyShelf />} />
+            <Route path="contribute" element={<Contribute />} />
+          </Route>
 
 
           {/* Common Admin/Librarian Route */}

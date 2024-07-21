@@ -50,6 +50,7 @@ const UserDropdown = () => {
               backgroundColor: "#fff",
             }}
           >
+            <Dropdown.Item as={Link} to="/profile" >Thông tin người dùng</Dropdown.Item>
             <Dropdown.Item href="#" onClick={handleLogout}>Đăng xuất</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>

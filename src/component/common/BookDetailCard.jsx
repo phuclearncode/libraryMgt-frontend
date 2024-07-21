@@ -144,73 +144,66 @@ const BookDetailCard = ({ bookDetail }) => {
 
         setSubmittingBorrow(true);
         await new Promise(r => setTimeout(r, 2000));
-
+    
         try {
-            await getWhoami().then(res => {
-                console.log(res)
-                if (res != null) {
-                    const isSubscribed = isUserSubscribed(res?.id);
-                    if (!isSubscribed) {
-                        navigate('/contribute', { state: { success: 'Bạn cần mua gói thành viên để mượn sách' } });
-
-                    }
-
-
-                    getLoansByUserId(res?.id).then(res => {
-                        console.log("resssss", res)
-                        // check number of book can rent in a month
-                        if (res?.data?.length > 0) {
-                            // get mem id
-                            const memberId = res?.data[0]?.memberId
-                            const numberOfRent = getBenefit(memberId);
-                            // check memfee and total price of book
-                            const totalPrice = getTotalPriceOfBook(res?.data)
-                            const memberFee = res?.data[0]?.memFee
-                            if (res?.data?.length >= res?.data[0]?.maxBook) {
-                                handleCloseBorrowBookModal()
-                                showError("Số lượng sách mượn đã vượt quá số lượng sách được mượn trong tháng")
-                                
-
-                            } else if (totalPrice >= memberFee) {
-                                handleCloseBorrowBookModal()
-                                showError("Giá đã vượt quá phí thành viên của tháng này")
-                                
-                            } else {
-                                borrowBook.id = id;
-                                borrowBook.price = price;
-                                console.log(borrowBook);
-                                requestRent(borrowBook).then(res => {
-                                    if (res?.code === 200) {
-                                        window.location.reload()
-                                        // handleCloseBorrowBookModal()
-                                        // setSubmittingBorrow(false);
-                                    }
-                                }).catch(err => showError(err))
-                            }
-                        } else {
-                            borrowBook.id = id;
-                            borrowBook.price = price;
-                            console.log(borrowBook);
-                            requestRent(borrowBook).then(res => {
-                                if (res?.code === 200) {
-                                    window.location.reload()
-                                    // handleCloseBorrowBookModal()
-                                    // setSubmittingBorrow(false);
-                                }
-                            }).catch(err => console.log(err))
-                        }
-                    })
+            const user = await getWhoami();
+            if (user != null) {
+                const isSubscribed = await isUserSubscribed(user?.id);
+                const isValid = isSubscribed?.data;
+                if (!isValid) {
+                    navigate('/contribute', { state: { success: 'Bạn cần mua gói thành viên để mượn sách' } });
+                    return;
                 }
-            })
-
+                const loansResponse = await getLoansByUserId(user?.id);
+    
+                if (loansResponse?.data?.length > 0) {
+                    const memberId = loansResponse?.data[0]?.memberId;
+                    const numberOfRent = getBenefit(memberId);
+                    const totalPrice = getTotalPriceOfBook(loansResponse?.data);
+                    const memberFee = loansResponse?.data[0]?.memFee;
+    
+                    if (loansResponse?.data?.length >= loansResponse?.data[0]?.maxBook) {
+                        handleCloseBorrowBookModal();
+                        showError("Số lượng sách mượn đã vượt quá số lượng sách được mượn trong tháng");
+                    } else if (totalPrice >= memberFee) {
+                        handleCloseBorrowBookModal();
+                        showError("Giá đã vượt quá phí thành viên của tháng này");
+                    } else {
+                        borrowBook.id = id;
+                        borrowBook.price = price;
+                        console.log(borrowBook);
+    
+                        const rentResponse = await requestRent(borrowBook);
+                        if (rentResponse?.code === 200) {
+                            window.location.reload();
+                        } else if (rentResponse?.code === 400) {
+                            navigate('/contribute', { state: { success: 'Bạn cần mua gói thành viên để mượn sách' } });
+                        }
+                    }
+                } else {
+                    borrowBook.id = id;
+                    borrowBook.price = price;
+                    console.log(borrowBook);
+    
+                    const rentResponse = await requestRent(borrowBook);
+                    console.log("resrent", rentResponse);
+    
+                    if (rentResponse?.code === 200) {
+                        window.location.reload();
+                    } else if (rentResponse?.code === 400) {
+                        navigate('/contribute', { state: { success: 'Bạn cần mua gói thành viên để mượn sách' } });
+                    }
+                }
+            }
         } catch (error) {
             console.error("Lỗi mượn sách: ", error);
             showError('Lỗi mượn sách');
+            handleCloseBorrowBookModal();
         } finally {
             setSubmittingBorrow(false);
         }
-
     };
+    
 
     const getBenefit = (memberId) => {
         let count = 0;
