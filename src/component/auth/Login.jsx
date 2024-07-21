@@ -109,7 +109,7 @@ const Login = () => {
       if (response.status === 200) {
 
         if (isAdmin()) {
-          navigate("/admin/user");
+          navigate("/admin");
         } else if (isLibrarian()) {
 
           navigate("/admin");

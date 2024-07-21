@@ -56,6 +56,7 @@ const ReturnComponent = () => {
                             <th>Ngày trả</th>
                             <th>Ngày quá hạn trả sách</th>
                             <th>Trạng thái</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
