@@ -14,7 +14,7 @@ import Notification from "./Notification";
 
 const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
   const [editingReviewId, setEditingReviewId] = useState(null);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState({});
   const { showError, showSuccess } = useNotification();
   const { isLibrarian, user } = useAuth();
 
@@ -42,9 +42,8 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
     setFormEditData({ ...formEditData, [name]: value });
   };
   const handleSubmit = async (event) => {
-    // Adjust if user add review
     event.preventDefault();
-    if (!ValidateForm()) {
+    if (!validateForm()) {
       showError("Vui lòng chọn số sao đánh giá");
       return;
     }
@@ -54,24 +53,21 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
         bookId: bookId,
         userId: user.id,
       };
-      console.log(newReview);
-      const addedReview = await addReview(newReview);
-
+      await addReview(newReview);
       setFormData({ feedback: "", rating: 0 });
       fetchBookDetail();
     } catch (error) {
       console.error("Error adding review:", error);
     }
-    console.log(formData);
     setEditingReviewId(null);
   };
 
-  const ValidateForm = () => {
+  const validateForm = () => {
     return formData.rating > 0 || formEditData.rating > 0;
   };
   const handleEditSubmit = async (event) => {
     event.preventDefault();
-    if (!ValidateForm()) {
+    if (!validateForm()) {
       showError("Vui lòng chọn số sao đánh giá");
       return;
     }
@@ -81,20 +77,18 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
         bookId: bookId,
         userId: user.id,
       };
-      console.log(updatedReview);
-      const addedReview = await updateReview(editingReviewId, updatedReview);
-      setFormData({ feedback: "", rating: 0 });
+      await updateReview(editingReviewId, updatedReview);
+      setFormEditData({ feedback: "", rating: 0 });
       fetchBookDetail();
     } catch (error) {
-      console.error("Error adding review:", error);
+      console.error("Error updating review:", error);
     }
-    console.log(formEditData);
     setEditingReviewId(null);
   };
-  const toggleExpand = (authorId) => {
+  const toggleExpand = (reviewId) => {
     setExpanded((prevState) => ({
       ...prevState,
-      [authorId]: !prevState[authorId],
+      [reviewId]: !prevState[reviewId],
     }));
   };
 
@@ -119,7 +113,6 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
 
   const handleEdit = (reviewId) => {
     setEditingReviewId(reviewId);
-
     const reviewToEdit = reviews.find((review) => review.id === reviewId);
     setFormEditData({
       rating: reviewToEdit.rating,
@@ -133,7 +126,7 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
 
   const handleDelete = async (reviewId) => {
     const isConfirmed = window.confirm(
-      "Bản cách xóa bán đánh giá nếu bắn có muốn xóa bán đánh giá này"
+      "Bạn có muốn xóa đánh giá này không?"
     );
     if (isConfirmed) {
       try {
@@ -159,7 +152,6 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
               placeholder="Viết feedback của bạn..."
               rows={6}
             />
-
             <div
               style={{
                 display: "flex",
@@ -186,7 +178,6 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
                   }
                 />
               </Form.Group>
-
               <Button
                 type="submit"
                 style={{
@@ -267,47 +258,49 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
                         }
                       />
                     )}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "small",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span style={{ marginLeft: "10px" }}>
+                    <div style={{ fontSize: "small", color: "#555" }}>
                       {review.updatedAt}
-                    </span>
-                    {editingReviewId === review.id ? (
-                      <div>
-                        <Button
-                          onClick={handleCancel}
-                          style={{
-                            fontSize: "small",
-                            backgroundColor: "transparent",
-                            border: "1px solid #ABABAB",
-                            marginLeft: "10px",
-                            color: "#ABABAB",
-                          }}
-                        >
-                          Hủy
-                        </Button>
-                        <Button
-                          onClick={handleEditSubmit}
-                          style={{
-                            fontSize: "small",
-                            backgroundColor: "#F87555",
-                            border: "none",
-                            marginLeft: "10px",
-                          }}
-                        >
-                          Lưu
-                        </Button>
-                      </div>
-                    ) : (
-                      renderDropdown(review.id)
-                    )}
+                    </div>
                   </div>
+                  {user.id === review.memberId && (
+                    <div
+                      style={{
+                        fontSize: "small",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      {editingReviewId === review.id ? (
+                        <div>
+                          <Button
+                            onClick={handleCancel}
+                            style={{
+                              fontSize: "small",
+                              backgroundColor: "transparent",
+                              border: "1px solid #ABABAB",
+                              marginLeft: "10px",
+                              color: "#ABABAB",
+                            }}
+                          >
+                            Hủy
+                          </Button>
+                          <Button
+                            onClick={handleEditSubmit}
+                            style={{
+                              fontSize: "small",
+                              backgroundColor: "#F87555",
+                              border: "none",
+                              marginLeft: "10px",
+                            }}
+                          >
+                            Lưu
+                          </Button>
+                        </div>
+                      ) : (
+                        renderDropdown(review.id)
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <p style={{ textAlign: "justify", fontSize: "small" }}>
@@ -319,31 +312,30 @@ const ReviewsTab = ({ bookId, reviews, fetchBookDetail, totalReviews }) => {
                     placeholder="Viết feedback của bạn..."
                     rows={6}
                   />
+                ) : expanded[review.id] ? (
+                  review.feedback
+                ) : review.feedback.length > 200 ? (
+                  <>
+                    {`${review.feedback.substring(0, 200)}...`}
+                    <Button
+                      onClick={() => toggleExpand(review.id)}
+                      variant="link"
+                      style={{ padding: "0", marginLeft: "5px" }}
+                    >
+                      Xem thêm
+                    </Button>
+                  </>
                 ) : (
-                  <span>
-                    {review.feedback.length > 200
-                      ? `${review.feedback.slice(0, 200)}...`
-                      : review.feedback}
-                    {review.feedback.length > 200 && (
-                      <span
-                        style={{
-                          color: "#F87555",
-                          cursor: "pointer",
-                          marginLeft: "5px",
-                        }}
-                        onClick={() => toggleExpand(review.id)}
-                      >
-                        {expanded[review.id] ? "Thu gọn" : "Xem thêm"}
-                      </span>
-                    )}
-                  </span>
+                  review.feedback
                 )}
               </p>
             </ListGroup.Item>
           ))}
         </ListGroup>
       ) : (
-        <div style={{ fontSize: "small" }}>Chưa có đánh giá nào</div>
+        <p style={{ textAlign: "justify", fontSize: "small" }}>
+          Không có đánh giá nào.
+        </p>
       )}
     </div>
   );

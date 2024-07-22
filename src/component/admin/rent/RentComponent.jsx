@@ -92,6 +92,7 @@ const RentComponent = () => {
                             <th>Ngày quá hạn trả sách</th>
                             <th>Ghi chú</th>
                             <th>Trạng thái</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
