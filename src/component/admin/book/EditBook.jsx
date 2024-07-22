@@ -444,7 +444,7 @@ const EditBook = () => {
             />
 
             <MultipleImageUpload
-              label="Tải mẫu ảnh xem trước"
+              label="Tải ảnh đọc thử"
               name="bookSampleImages"
               onChange={handleChange}
               showError={showError}

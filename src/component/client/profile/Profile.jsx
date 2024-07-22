@@ -254,64 +254,6 @@ const Profile = () => {
                         />
                         {errors.phoneNumber && <div className='text-danger'>{errors.phoneNumber}</div>}
                     </Form.Group>
-
-                    <Form.Group as={Col}>
-                        <Form.Label className="label">Vai trò</Form.Label>
-                        <Form.Select
-                            className="field-input"
-                            type="text"
-                            placeholder=""
-                            style={{ fontSize: "small" }}
-                            name="role"
-                            value={profile.role}
-                            onChange={handleChange}
-                        >
-                            <option
-                                value="MEMBER"
-                                style={{ fontSize: "small" }}
-                                defaultValue={user.role === "MEMBER"}
-                            >
-                                Thành viên
-                            </option>
-                            <option
-                                value="LIBRARIAN"
-                                style={{ fontSize: "small" }}
-                                defaultValue={user.role === "LIBRARIAN"}
-                            >
-                                Thủ thư
-                            </option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group as={Col}>
-                        <Form.Label className="label">Trạng thái</Form.Label>
-                        <Form.Select
-                            className="field-input"
-                            type="text"
-                            placeholder=""
-                            style={{ fontSize: "small" }}
-                            name="status"
-                            value={profile.status}
-                            onChange={handleChange}
-                        >
-                            <option
-                                value="ACTIVE"
-                                style={{ fontSize: "small" }}
-                                defaultValue={profile.status === "ACTIVE"}
-                            >
-                                Đã kích hoạt
-                            </option>
-                            <option
-                                value="INACTIVE"
-                                style={{ fontSize: "small" }}
-                                defaultValue={profile.status === "INACTIVE"}
-                            >
-                                Chưa kích hoạt
-                            </option>
-                        </Form.Select>
-
-
-                    </Form.Group>
                 </Row>
                 <hr style={{ border: '1px solid #DEE2E6', marginBottom: '30px' }} />
 
