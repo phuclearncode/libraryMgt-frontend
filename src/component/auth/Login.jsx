@@ -67,7 +67,7 @@ const Login = () => {
 
     const validatePassword = (password) => {
       if (!password) {
-        return "Vui lòng nhập mật khẩu";
+        return "Vui lòng nhập mật khẩu vào ô";
       }
       return "";
     };
