@@ -116,7 +116,7 @@ const Login = () => {
         } else if (isMember()) {
           navigate("/");
         } else {
-          showError('Không thể xác định vai trò của người dùng');
+          showError('Không thể xác định vai trò của người dùng hay xem lai');
         }
       } else if (response.status === 302) {
         send();
